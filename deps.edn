@@ -1,6 +1,10 @@
 {:aliases
  {:dev {:extra-paths ["development/src"]
-        :extra-deps {org.clojure/clojure {:mvn/version "1.12.5"}
+        :extra-deps {;; components
+                     poly/message-intermediate {:local/root "components/message-intermediate"}
+
+                     ;; clojure
+                     org.clojure/clojure {:mvn/version "1.12.5"}
                      org.clojure/core.async {:mvn/version "1.9.865"}}}
 
   :test {:extra-paths []}
