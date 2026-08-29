@@ -39,4 +39,4 @@
         _ (def r record)
         message (message/record->hl7 record)]
     (message/hl7->parsed-message message)
-    nil))
+    message))

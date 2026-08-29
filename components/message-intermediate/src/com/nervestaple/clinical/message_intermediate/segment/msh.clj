@@ -83,10 +83,12 @@
   "Accepts one or a sequence of VID records and returns a value, collection or map
   of HL7 v2 data."
   [vid-record]
-  (segment/type-to-field vid-record
-                         #(vector (:version-id %)
-                                  (:international-code %)
-                                  (:international-version-id %))))
+  (segment/type-to-field
+   vid-record
+   #(vector
+     (:version-id %)
+     (util/trim-nils (segment/ce->field (:international-code %)))
+     (util/trim-nils (segment/ce->field (:international-version-id %))))))
 
 (s/fdef field->vid
   :args (s/nilable (s/coll-of ::segment/hl7-content))
