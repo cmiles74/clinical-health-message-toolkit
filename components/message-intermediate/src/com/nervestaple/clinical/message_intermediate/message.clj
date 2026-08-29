@@ -14,18 +14,14 @@
   (s/with-gen map?
     #(gen/fmap identity (s/gen #{util/default-delimiters}))))
 (s/def ::segments ::segment/segments)
-(s/def ::sets ::segment/segment-set)
+(s/def ::sets (s/coll-of ::segment/segment-set))
 (s/def ::remainder (s/nilable (s/coll-of string?)))
 
 (s/def ::spec
   (s/keys :req-un [::delimiters ::segments]
-          :opt-un [::sets ::remainder]))
+          :opt-un [::sets]))
 
 (defn hl7->record
-  "Accepts a parsed HL7 v2 message and returns a message record with the same
-  data. Data segments that are part of a set are stored in on the `:sets`
-  key (in order), segments that cannot be parsed are stored on the `:remainder`
-  key."
   [message]
   (loop [index 0
          segment-this (first (:segments message))
@@ -49,12 +45,12 @@
                 remainder))))
 
 (defn record->hl7
-  "Accepts a message record and returns a parsed HL7 v2 message."
   [message]
-  (let [segments (into [] (concat (:segments message)             ;; collect segments in a vector
-                                  (:remainder message)
-                                  (flatten (:sets message))))
-        segments-sorted (remove nil? (sort-by :index segments))]  ;; remove nil, sort the segments
+  (let [segments (into []
+                       (concat (:segments message)                ;; collect segments
+                               (:remainder message)
+                               (flatten (:sets message))))
+        segments-sorted (remove nil? (sort-by :index segments))]  ;; remove nil & sort
 
     ;; add our segments to a new message
     (apply (partial hl7-parser/create-message (:delimiters message))
@@ -63,20 +59,14 @@
                 segments-sorted))))
 
 (defn get-segments
-  "Returns all of the segments (those that are not part of a set) with the
-   matching segment ID from the provided message record."
   [message segment-id]
   (filter #(= segment-id (:id %)) (:segments message)))
 
 (defn get-set
-  "Returns the set of segment data that is at the provided index in the given
-   message."
   [message set-index]
   (nth (:sets message) set-index))
 
 (defn get-set-segment
-  "Returns all of the segments from the set at the provided index that match
-   the given segment id in the message."
   [message set-index segment-id]
   (filter #(= segment-id (:id %))
           (get-set message set-index)))

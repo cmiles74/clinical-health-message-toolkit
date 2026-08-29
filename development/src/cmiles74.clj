@@ -1,7 +1,42 @@
 (ns cmiles74
   (:require
-   [com.nervestaple.clinical.message-intermediate.interface :as message]))
+   [clojure.pprint :as p]
+   [clojure.spec.alpha :as s]
+   [clojure.spec.gen.alpha :as gen]
+   [com.nervestaple.hl7-parser.parser :as parser]
+   [com.nervestaple.hl7-parser.message :as parser-message]
+   [com.nervestaple.hl7-parser.test :as parser-test]
+   [com.nervestaple.clinical.message-intermediate.interface.core :as message]
+   [com.nervestaple.clinical.message-intermediate.interface.segment :as segment]))
 
-(def test-message
-  "MSH|^~\\&|ImmTrac24.16|TEXIIS||BURL6343|20210415044526-0500||ACK^V04^ACK|7008167375|P|2.5.1|||NE|NE|||||Z23^CDCPHINVS|TEXIIS|BURL6343\rMSA|AE|7008167375\rERR||NK1^^0|101^Required field missing^HL70357|W|4^Invalid value^HL70533|||IEE-519::Warning. NK1 Segment/Responsible person, missing.")
+(def test-message (parser-test/test-message))
 
+(def test-record (message/hl7->record test-message))
+
+(defn gen-segment []
+  (gen/generate (s/gen ::segment/msh)))
+
+(defn gen-message []
+  (gen/generate (s/gen ::message/message)))
+
+(defn gen-message->hl7 []
+  (message/record->hl7 (gen/generate (s/gen ::message/message))))
+
+(defn gen-ack []
+  (let [record (gen-message->hl7)
+        parsed (message/hl7->parsed-message record)]
+    (parser-message/ack-message {:sending-app "TUTORIAL"
+                                 :sending-facility "TUTORIAL FACILITY"
+                                 :production-mode "T"
+                                 :version "2.7.1"
+                                 :text-message "Processed successfully!"}
+                                "AA"
+                                parsed)))
+
+;;(message/hl7->parsed-message (gen-message->hl7))
+(defn gen-message []
+  (let [record (gen/generate (s/gen ::message/message))
+        _ (def r record)
+        message (message/record->hl7 record)]
+    (message/hl7->parsed-message message)
+    nil))

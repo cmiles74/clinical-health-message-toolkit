@@ -2,7 +2,6 @@
   (:require
    [com.nervestaple.hl7-parser.parser :as parser]
    [com.nervestaple.hl7-parser.message :as message]
-   [com.nervestaple.clinical.message-intermediate.segment.main :as segment]
    [com.nervestaple.clinical.message-intermediate.segment.msa :as msa]
    [com.nervestaple.clinical.message-intermediate.segment.msh :as msh]
    [com.nervestaple.clinical.message-intermediate.segment.err :as err]

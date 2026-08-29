@@ -73,7 +73,6 @@
       output)))
 
 (defn message
-  "Prints a human readable version of the message to standard out."
   [message]
   (println "Segments:")
   (apply println (dump-segments (:segments message)))

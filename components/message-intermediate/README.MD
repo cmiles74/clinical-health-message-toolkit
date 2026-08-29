@@ -31,7 +31,7 @@ To use this library, require it in your project.
 ```clojure
 (ns com.example.project
   (:require
-   [com.nervestaple.clinical.message-intermediate.interface :as message]))
+   [com.nervestaple.clinical.message-intermediate.interface.core :as message]))
 
 ```
 
@@ -46,6 +46,8 @@ result into a set of segments representing the message. First we generate a test
 ```clojure
 (require '[com.nervestaple.hl7-parser.test :as parser-test])
 (def test-message (parser-test/test-message))
+test-message
+;"MSH|^~\\&|AcmeHIS|StJohn|CATH|StJohn|20061019172719||ORM^O01|1788025612436|P|2.3\rPID|||20301||Durden^Tyler^^^Mr.||19700312|M|||88 Punchward Dr.^^Los Angeles^CA^11221^USA|||||||\rPV1||O|OP^^||||4652^Paulson^Robert|||OP|||||||||9|||||||||||||||||||||||||20061019172717|20061019172718\rORC|NW|20061019172719\rOBR|1|20061019172719||76770^Ultrasound: retroperitoneal^C4|||12349876\r"
 ```
 
 Now we can transform that into our intermediate format, this includes named
@@ -64,8 +66,15 @@ grouped together by a "set ID", they will be available as a sequence under the
 `:sets` key.
 
 ```clojure
-user> (keys msg)
-(:delimiters :segments :sets :remainder)
+(keys test-record)
+;(:delimiters :segments :sets :remainder)
+```
+
+Delimiters are expressed as integers with Unicode code points for the particular character.
+
+```clojure
+(:delimiters test-record)
+;{:field 124, :component 94, :repeating 126, :escape 92, :subcomponent 38}
 ```
 
 Our test message, like many messages you'll find out in the wild, has some
@@ -209,9 +218,10 @@ test data...
   (:require
    [clojure.spec.alpha :as s]
    [clojure.spec.gen.alpha :as gen]
-   [com.nervestaple.clinical.message-intermediate.interface :as message]))
+   [com.nervestaple.clinical.message-intermediate.interface.core :as message]
+   [com.nervestaple.clinical.message-intermediate.interface.segment :as segment]))
 
-(gen/generate (s/gen ::message/msh))
+(gen/generate (s/gen ::segment/msh))
 ```
 
 This will return a record filled with mostly gibberish data but which meets the
@@ -219,13 +229,13 @@ technical contract for the MSH segment. Messages may be created in the same
 manner.
 
 ```clojure
-(gen/generate (s/gen ::message/spec))
+(gen/generate (s/gen ::message/message))
 ```
 
 Of course, with a test message in hand you can output a test HL7 message.
 
 ```clojure
-(message/record->hl7 (gen/generate (s/gen ::message/spec)))
+(print (message/record->hl7 (gen/generate (s/gen ::message/message))))
 ```
 
 Your output will be similar to the following.
@@ -239,17 +249,10 @@ PID||5vptGBJdf1bj984llvoHamyT^^Li^XOyi71340Yx2o^Jd015^^20020728143509-0400|1wF9I
 There are a lot of odd little data types, convenience methods are available
 where appropriate to make this easier. For instance, instead of creating a
 time-stamp (TS) record by hand you can create one from a zoned or local data and
-time.
-
-
-```clojure
-(message/time->ts (time/zoned-date-time))
-```
-
-You can also create one with the current date and time.
+time. You can also create one with the current date and time.
 
 ```clojure
-(message/now->ts)
+(segment/now->ts)
 ```
 
 This was originally a Leiningen project, we're working on converting it to a Polylith component so that we can manage the code in the same place as our other clinical health messaging tools. As we figure out nice ways to structure to message writing code we'll update this file.
