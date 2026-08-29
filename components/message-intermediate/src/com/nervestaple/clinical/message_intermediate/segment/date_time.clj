@@ -3,7 +3,7 @@
    [clojure.spec.alpha :as s]
    [clojure.spec.gen.alpha :as gen]
    [clojure.test.check.generators :as gens]
-   [java-time :as time]))
+   [java-time.api :as time]))
 
 ;;
 ;; Spec and Generators for Java date and time instances

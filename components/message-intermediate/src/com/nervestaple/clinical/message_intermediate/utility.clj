@@ -1,6 +1,6 @@
 (ns com.nervestaple.clinical.message-intermediate.utility
   (:require
-   [java-time :as time]
+   [java-time.api :as time]
    [com.nervestaple.hl7-parser.parser :as parser]
    [com.nervestaple.clinical.message-intermediate.segment.main :as segment])
   (:import

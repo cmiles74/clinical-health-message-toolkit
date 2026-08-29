@@ -36,7 +36,6 @@
 ;;(message/hl7->parsed-message (gen-message->hl7))
 (defn gen-message []
   (let [record (gen/generate (s/gen ::message/message))
-        _ (def r record)
         message (message/record->hl7 record)]
     (message/hl7->parsed-message message)
     message))

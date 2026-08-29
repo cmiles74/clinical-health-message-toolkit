@@ -1,4 +1,4 @@
-(ns com.nervestaple.clinical.message-intermediate.message
+(ns com.nervestaple.clinical.message-intermediate.message.message
   (:require
    [clojure.spec.alpha :as s]
    [clojure.spec.gen.alpha :as gen]
@@ -15,7 +15,6 @@
     #(gen/fmap identity (s/gen #{util/default-delimiters}))))
 (s/def ::segments ::segment/segments)
 (s/def ::sets (s/coll-of ::segment/segment-set))
-(s/def ::remainder (s/nilable (s/coll-of string?)))
 
 (s/def ::spec
   (s/keys :req-un [::delimiters ::segments]

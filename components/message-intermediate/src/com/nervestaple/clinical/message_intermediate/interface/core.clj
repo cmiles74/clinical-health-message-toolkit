@@ -3,7 +3,7 @@
    [clojure.spec.alpha :as s]
    [com.nervestaple.hl7-parser.parser :as parser]
    [com.nervestaple.clinical.message-intermediate.message.defaults :as defaults]
-   [com.nervestaple.clinical.message-intermediate.message :as core]
+   [com.nervestaple.clinical.message-intermediate.message.message :as core]
    [com.nervestaple.clinical.message-intermediate.message.dump :as dump]))
 
 ;; segment specs

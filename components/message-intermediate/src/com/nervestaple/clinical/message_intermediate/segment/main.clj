@@ -5,9 +5,9 @@
    [clojure.string :as string]
    [com.nervestaple.hl7-parser.parser :as parser]
    [com.nervestaple.clinical.message-intermediate.segment.lookups :as lookups]
-   [com.nervestaple.clinical.message-intermediate.segment.utility :as util]
    [com.nervestaple.clinical.message-intermediate.segment.date-time :as date-time]
-   [java-time :as time]))
+   [com.nervestaple.clinical.message-intermediate.segment.utility :as segment-util]
+   [java-time.api :as time]))
 
 (defn to-field-remainder
   "Accepts a function that converts a record into a field of parsed HL7 v2 data
@@ -31,7 +31,7 @@
           (mapv #(parser/create-field (to-field-fn-out %)) record)
 
           (and (map? record)
-               (util/map-nil-or-empty record))
+               (segment-util/map-nil-or-empty record))
           []
 
           :else
@@ -48,14 +48,14 @@
   Any field data that is not included in the record will be present on the
   record under the key `:remainder`."
   [field to-map-fn]
-  (let [data (util/unwrap-field field)
-        field (cond (util/is-field? field)           ;; repeating field, one record
+  (let [data (segment-util/unwrap-field field)
+        field (cond (segment-util/is-field? field)   ;; repeating field, one record
                     (to-map-fn field)
 
                     (or (nil? field) (= [] field))   ;; nil or empty collection, nil record
                     nil
 
-                    (util/all-vectors? data)         ;; vector of data, multiple records
+                    (segment-util/all-vectors? data) ;; vector of data, multiple records
                     (mapv to-map-fn data)
 
                     (vector? data)                   ;; one vector, one record
@@ -121,7 +121,7 @@
   of HL7 v2 data."
   [ts-record]
   (type-to-field ts-record
-                 #(vector (util/format-time (:time %))
+                 #(vector (segment-util/format-time (:time %))
                           (:precision %))))
 
 (s/fdef field->ts
@@ -135,8 +135,9 @@
   [field]
   (field-to-type field
                  map->ts
-                 #(array-map :time (util/parse-timestamp (util/get-or-nil % 0))
-                             :precision (util/get-or-nil % 1))))
+                 #(array-map :time (segment-util/parse-timestamp
+                                    (segment-util/get-or-nil % 0))
+                             :precision (segment-util/get-or-nil % 1))))
 
 (defn time->ts
   "Accepts a zonded date time or a local data time and returns a TS record."
@@ -168,8 +169,8 @@
   of HL7 v2 data."
   [dr-record]
   (type-to-field dr-record
-                 #(vec (concat (util/trim-nils (ts->field (:date-time-start %)))
-                               (util/trim-nils (ts->field (:date-time-end %)))))))
+                 #(vec (concat (segment-util/trim-nils (ts->field (:date-time-start %)))
+                               (segment-util/trim-nils (ts->field (:date-time-end %)))))))
 
 (s/fdef field->dr
   :args (s/nilable (s/coll-of ::hl7-content))
@@ -182,8 +183,8 @@
   [field]
   (field-to-type field
                  map->dr
-                 #(array-map :date-time-start (field->ts (util/get-or-nil % 0))
-                             :date-time-end (field->ts (util/get-or-nil % 1)))))
+                 #(array-map :date-time-start (field->ts (segment-util/get-or-nil % 0))
+                             :date-time-end (field->ts (segment-util/get-or-nil % 1)))))
 
 (defn time->dr
   "Accepts two Java time instances (a start and an end) and returns DR record"
@@ -240,26 +241,29 @@
   [field]
   (field-to-type field
                  map->ce
-                 #(array-map :identifier (util/get-or-nil % 0)
-                             :text (util/get-or-nil % 1)
-                             :coding-system (util/get-or-nil % 2)
-                             :alternate-identifier (util/get-or-nil % 3)
-                             :alternate-text (util/get-or-nil % 4)
-                             :alternate-coding-system (util/get-or-nil % 5))))
+                 #(array-map :identifier (segment-util/get-or-nil % 0)
+                             :text (segment-util/get-or-nil % 1)
+                             :coding-system (segment-util/get-or-nil % 2)
+                             :alternate-identifier (segment-util/get-or-nil % 3)
+                             :alternate-text (segment-util/get-or-nil % 4)
+                             :alternate-coding-system (segment-util/get-or-nil % 5))))
 
 ;; commonly used race CE values
 (def race-black
-  (map->ce {:identifier "2054-5" :text "Black or African American" :coding-system "HL70005"}))
+  (map->ce {:identifier "2054-5" :text "Black or African American"
+            :coding-system "HL70005"}))
 (def race-hispanic
   (map->ce {:identifier "213502" :text "Hispanic" :coding-system "CIDREC"}))
 (def race-native
-  (map->ce {:identifier "1002-5" :text "American Indian or Alaskan Native" :coding-system "HL70005"}))
+  (map->ce {:identifier "1002-5" :text "American Indian or Alaskan Native"
+            :coding-system "HL70005"}))
 (def race-other
   (map->ce {:identifier "2131-1" :text "Other Race" :coding-system "HL70005"}))
 (def race-pacific-islander
   (map->ce {:identifier "2076-8" :text "Native Hawaiian or Other Pacific Islander"
             :coding-system "HL70005"}))
-(def race-white  (map->ce {:identifier "2106-3" :text "White" :coding-system "HL70005"}))
+(def race-white  (map->ce {:identifier "2106-3" :text "White"
+                           :coding-system "HL70005"}))
 
 (def race-map
   "Map of namespaced keywords to CE records representing the appropriate race."
@@ -337,15 +341,15 @@
   [field]
   (field-to-type field
                  map->cwe
-                 #(array-map :identifier (util/get-or-nil % 0)
-                             :text (util/get-or-nil % 1)
-                             :coding-system (util/get-or-nil % 2)
-                             :alternate-identifier (util/get-or-nil % 3)
-                             :alternate-text (util/get-or-nil % 4)
-                             :alternate-coding-system (util/get-or-nil % 5)
-                             :coding-system-version (util/get-or-nil % 6)
-                             :alternate-coding-system-version (util/get-or-nil % 7)
-                             :original-text (util/get-or-nil % 8))))
+                 #(array-map :identifier (segment-util/get-or-nil % 0)
+                             :text (segment-util/get-or-nil % 1)
+                             :coding-system (segment-util/get-or-nil % 2)
+                             :alternate-identifier (segment-util/get-or-nil % 3)
+                             :alternate-text (segment-util/get-or-nil % 4)
+                             :alternate-coding-system (segment-util/get-or-nil % 5)
+                             :coding-system-version (segment-util/get-or-nil % 6)
+                             :alternate-coding-system-version (segment-util/get-or-nil % 7)
+                             :original-text (segment-util/get-or-nil % 8))))
 
 ;; CNE: Coded with no exceptions
 (defrecord cne
@@ -396,15 +400,15 @@
   [field]
   (field-to-type field
                  map->cne
-                 #(array-map :identifier (util/get-or-nil % 0)
-                             :text (util/get-or-nil % 1)
-                             :coding-system (util/get-or-nil % 2)
-                             :alternate-identifier (util/get-or-nil % 3)
-                             :alternate-text (util/get-or-nil % 4)
-                             :alternate-coding-system (util/get-or-nil % 5)
-                             :coding-system-version (util/get-or-nil % 6)
-                             :alternate-coding-system-version (util/get-or-nil % 7)
-                             :original-text (util/get-or-nil % 8))))
+                 #(array-map :identifier (segment-util/get-or-nil % 0)
+                             :text (segment-util/get-or-nil % 1)
+                             :coding-system (segment-util/get-or-nil % 2)
+                             :alternate-identifier (segment-util/get-or-nil % 3)
+                             :alternate-text (segment-util/get-or-nil % 4)
+                             :alternate-coding-system (segment-util/get-or-nil % 5)
+                             :coding-system-version (segment-util/get-or-nil % 6)
+                             :alternate-coding-system-version (segment-util/get-or-nil % 7)
+                             :original-text (segment-util/get-or-nil % 8))))
 
 ;; CQ: composite quantity with units
 (defrecord cq [quantity units])
@@ -426,7 +430,7 @@
   [cq-record]
   (type-to-field cq-record
                  #(conj (vector (str (:quantity %)))
-                        (util/trim-nils (ce->field (:units %))))))
+                        (segment-util/trim-nils (ce->field (:units %))))))
 
 (s/fdef field->cq
   :args (s/nilable (s/coll-of ::hl7-content))
@@ -439,8 +443,9 @@
   [field]
   (field-to-type field
                  map->cq
-                 #(array-map :quantity  (util/read-string (util/get-or-nil % 0))
-                             :units (field->ce (util/get-or-nil % 1)))))
+                 #(array-map :quantity  (segment-util/read-string
+                                         (segment-util/get-or-nil % 0))
+                             :units (field->ce (segment-util/get-or-nil % 1)))))
 
 (defn number->cq
   "Accepts a number and returns a CQ record."
@@ -483,9 +488,9 @@
   [field]
   (field-to-type field
                  map->hd
-                 #(array-map :namespace-id (util/get-or-nil % 0)
-                             :universal-id (util/get-or-nil % 1)
-                             :universal-id-type (util/get-or-nil % 2))))
+                 #(array-map :namespace-id (segment-util/get-or-nil % 0)
+                             :universal-id (segment-util/get-or-nil % 1)
+                             :universal-id-type (segment-util/get-or-nil % 2))))
 
 (defn string->hd
   "Accepts a string with a namespace identifier and returns an HD record."
@@ -534,13 +539,13 @@
                  #(vector (:identifier %)
                           (:check-digit %)
                           (:check-scheme %)
-                          (util/trim-nils (hd->field (:assigning-authority %)))
+                          (segment-util/trim-nils (hd->field (:assigning-authority %)))
                           (:identifier-type-code %)
-                          (util/trim-nils (hd->field (:assigning-facility %)))
-                          (util/trim-nils (ts->field (:effective-date %)))
-                          (util/trim-nils (ts->field (:expiration-date %)))
-                          (util/trim-nils (cwe->field (:assigning-jurisdiction %)))
-                          (util/trim-nils (cwe->field (:assigning-agency %))))))
+                          (segment-util/trim-nils (hd->field (:assigning-facility %)))
+                          (segment-util/trim-nils (ts->field (:effective-date %)))
+                          (segment-util/trim-nils (ts->field (:expiration-date %)))
+                          (segment-util/trim-nils (cwe->field (:assigning-jurisdiction %)))
+                          (segment-util/trim-nils (cwe->field (:assigning-agency %))))))
 
 (s/def ::patient-identifier
   (s/and ::spec-cx #(string? (:identifier %))))
@@ -565,18 +570,19 @@
   "Accepts an HL7 v2 field of CX data and returns a single CX record or a sequence
   of records or nil."
   [field]
-  (field-to-type field
-                 map->cx
-                 #(array-map :identifier (util/get-or-nil % 0)
-                             :check-digit (util/read-string (util/get-or-nil % 1))
-                             :check-scheme (util/get-or-nil % 2)
-                             :assigning-authority (field->hd (util/get-or-nil % 3))
-                             :identifier-type-code (util/get-or-nil % 4)
-                             :assigning-facility (field->hd (util/get-or-nil % 5))
-                             :effective-date (field->ts (util/get-or-nil % 6))
-                             :expiration-date (field->ts (util/get-or-nil % 7))
-                             :assigning-jurisdiction (field->cwe (util/get-or-nil % 8))
-                             :assigning-agency (field->cwe (util/get-or-nil % 9)))))
+  (field-to-type
+   field
+   map->cx
+   #(array-map :identifier (segment-util/get-or-nil % 0)
+               :check-digit (segment-util/read-string (segment-util/get-or-nil % 1))
+               :check-scheme (segment-util/get-or-nil % 2)
+               :assigning-authority (field->hd (segment-util/get-or-nil % 3))
+               :identifier-type-code (segment-util/get-or-nil % 4)
+               :assigning-facility (field->hd (segment-util/get-or-nil % 5))
+               :effective-date (field->ts (segment-util/get-or-nil % 6))
+               :expiration-date (field->ts (segment-util/get-or-nil % 7))
+               :assigning-jurisdiction (field->cwe (segment-util/get-or-nil % 8))
+               :assigning-agency (field->cwe (segment-util/get-or-nil % 9)))))
 
 (defn string->cx
   "Accepts a string with an identifier and returns a CX record."
@@ -619,10 +625,10 @@
   [field]
   (field-to-type field
                  map->ei
-                 #(array-map :identifier (util/get-or-nil % 0)
-                             :namespace-id (util/get-or-nil % 1)
-                             :universal-id (util/get-or-nil % 2)
-                             :universal-id-type (util/get-or-nil % 3))))
+                 #(array-map :identifier (segment-util/get-or-nil % 0)
+                             :namespace-id (segment-util/get-or-nil % 1)
+                             :universal-id (segment-util/get-or-nil % 2)
+                             :universal-id-type (segment-util/get-or-nil % 3))))
 
 (defn string->ei
   "Accepts a string with an identifier and returns an EI record."
@@ -669,7 +675,7 @@
 (defn read-money
   [text]
   (let [text-out (prepend-zero-money text)]
-    (util/read-string text-out)))
+    (segment-util/read-string text-out)))
 
 (defn field->mo
   "Accepts an HL7 v2 field of MO data and returns a single record, a sequence of
@@ -677,8 +683,8 @@
   [field]
   (field-to-type field
                  map->mo
-                 #(array-map :money-quantity (read-money (util/get-or-nil % 0))
-                             :money-denomination (util/get-or-nil % 1))))
+                 #(array-map :money-quantity (read-money (segment-util/get-or-nil % 0))
+                             :money-denomination (segment-util/get-or-nil % 1))))
 
 (defn number->mo
   "Accepts a number with the currency value and returns an MO record in US dollars."
@@ -710,11 +716,11 @@
   map of HL7 v2 data."
   [record]
   (type-to-field record
-                 #(vector (util/trim-nils (mo->field (:price %)))
+                 #(vector (segment-util/trim-nils (mo->field (:price %)))
                           (:price-type %)
                           (:value-from %)
                           (:value-to %)
-                          (util/trim-nils (ce->field (:range-units %)))
+                          (segment-util/trim-nils (ce->field (:range-units %)))
                           (:range-type %))))
 
 (s/fdef field->cp
@@ -726,14 +732,15 @@
   "Accepts an HL7 v2 field of CP data and returns a single record, a sequence
   of records or nil."
   [field]
-  (field-to-type field
-                 map->cp
-                 #(array-map :price (field->mo (util/get-or-nil % 0))
-                             :price-type (util/get-or-nil % 1)
-                             :value-from (util/read-string (util/get-or-nil % 2))
-                             :value-to (util/read-string (util/get-or-nil % 3))
-                             :range-units (field->ce (util/get-or-nil % 4))
-                             :range-type (util/get-or-nil % 5))))
+  (field-to-type
+   field
+   map->cp
+   #(array-map :price (field->mo (segment-util/get-or-nil % 0))
+               :price-type (segment-util/get-or-nil % 1)
+               :value-from (segment-util/read-string (segment-util/get-or-nil % 2))
+               :value-to (segment-util/read-string (segment-util/get-or-nil % 3))
+               :range-units (field->ce (segment-util/get-or-nil % 4))
+               :range-type (segment-util/get-or-nil % 5))))
 
 ;; FN: family name
 (defrecord fn-name
@@ -780,11 +787,11 @@
   [field]
   (field-to-type field
                  map->fn-name
-                 #(array-map :surname (util/get-or-nil % 0)
-                             :own-surname-prefix (util/get-or-nil % 1)
-                             :own-surname (util/get-or-nil % 2)
-                             :spouse-surname-prefix (util/get-or-nil % 3)
-                             :spouse-surname (util/get-or-nil % 4))))
+                 #(array-map :surname (segment-util/get-or-nil % 0)
+                             :own-surname-prefix (segment-util/get-or-nil % 1)
+                             :own-surname (segment-util/get-or-nil % 2)
+                             :spouse-surname-prefix (segment-util/get-or-nil % 3)
+                             :spouse-surname (segment-util/get-or-nil % 4))))
 
 (defn string->fn-name
   "Accepts a string with a family name and returns a FN record."
@@ -832,7 +839,7 @@
   of HL7 v2 data."
   [xpn-record]
   (type-to-field xpn-record
-                 #(conj (vector (util/trim-nils (fn-name->field (:family-name %)))
+                 #(conj (vector (segment-util/trim-nils (fn-name->field (:family-name %)))
                                 (:given-name %)
                                 (:further-given-name %)
                                 (:suffix %)
@@ -840,8 +847,8 @@
                                 (:degree %)
                                 (:name-type-code %)
                                 (:name-representation-code %))
-                        (util/trim-nils (ce->field (:name-context %)))
-                        (util/trim-nils (dr->field (:name-validity-range %)))
+                        (segment-util/trim-nils (ce->field (:name-context %)))
+                        (segment-util/trim-nils (dr->field (:name-validity-range %)))
                         (:name-assembly-order %))))
 
 (s/fdef patient-name
@@ -869,17 +876,17 @@
   [field]
   (field-to-type field
                  map->xpn
-                 #(array-map :family-name (field->fn-name (util/get-or-nil % 0))
-                             :given-name (util/get-or-nil % 1)
-                             :further-given-name (util/get-or-nil % 2)
-                             :suffix (util/get-or-nil % 3)
-                             :prefix (util/get-or-nil % 4)
-                             :degree (util/get-or-nil % 5)
-                             :name-type-code (util/get-or-nil % 6)
-                             :name-representation-code (util/get-or-nil % 7)
-                             :name-context (field->ce (util/get-or-nil % 8))
-                             :name-validity-range (field->dr (util/get-or-nil % 9))
-                             :name-assembly-order (util/get-or-nil % 10))))
+                 #(array-map :family-name (field->fn-name (segment-util/get-or-nil % 0))
+                             :given-name (segment-util/get-or-nil % 1)
+                             :further-given-name (segment-util/get-or-nil % 2)
+                             :suffix (segment-util/get-or-nil % 3)
+                             :prefix (segment-util/get-or-nil % 4)
+                             :degree (segment-util/get-or-nil % 5)
+                             :name-type-code (segment-util/get-or-nil % 6)
+                             :name-representation-code (segment-util/get-or-nil % 7)
+                             :name-context (field->ce (segment-util/get-or-nil % 8))
+                             :name-validity-range (field->dr (segment-util/get-or-nil % 9))
+                             :name-assembly-order (segment-util/get-or-nil % 10))))
 
 (defn string->xpn
   "Accepts strings with last, first and middle name and returns an XPN record."
@@ -929,9 +936,9 @@
   [field]
   (field-to-type field
                  map->sad
-                 #(array-map :street-address (util/get-or-nil % 0)
-                             :street-name (util/get-or-nil % 1)
-                             :dwelling-number (util/get-or-nil % 2))))
+                 #(array-map :street-address (segment-util/get-or-nil % 0)
+                             :street-name (segment-util/get-or-nil % 1)
+                             :dwelling-number (segment-util/get-or-nil % 2))))
 
 (defn string->sad
   "Accepts a string with an address and returns a SAD record"
@@ -994,7 +1001,7 @@
   data."
   [xad-record]
   (type-to-field xad-record
-                 #(vector (util/trim-nils (sad->field (:street-1 %)))
+                 #(vector (segment-util/trim-nils (sad->field (:street-1 %)))
                           (:street-2 %)
                           (:city %)
                           (:state %)
@@ -1005,7 +1012,7 @@
                           (:county-code %)
                           (:census-tract %)
                           (:representation-code %)
-                          (util/trim-nils (dr->field (:validity-range %))))))
+                          (segment-util/trim-nils (dr->field (:validity-range %))))))
 
 (s/fdef field->xad
   :args (s/nilable (s/coll-of ::hl7-content))
@@ -1018,20 +1025,20 @@
   [field]
   (field-to-type field
                  map->xad
-                 #(array-map :street-1 (if (coll? (util/get-or-nil % 0))
-                                         (field->sad (util/get-or-nil % 0))
-                                         (string->sad (util/get-or-nil % 0)))
-                             :street-2 (util/get-or-nil % 1)
-                             :city (util/get-or-nil % 2)
-                             :state (util/get-or-nil % 3)
-                             :postal-code (util/get-or-nil % 4)
-                             :country (util/get-or-nil % 5)
-                             :address-type (lookups/address-by-value (util/get-or-nil % 6))
-                             :other-geo-designation (util/get-or-nil % 7)
-                             :county-code (util/get-or-nil % 8)
-                             :census-tract (util/get-or-nil % 9)
-                             :representation-code (util/get-or-nil % 10)
-                             :validity-range (field->dr (util/get-or-nil % 11)))))
+                 #(array-map :street-1 (if (coll? (segment-util/get-or-nil % 0))
+                                         (field->sad (segment-util/get-or-nil % 0))
+                                         (string->sad (segment-util/get-or-nil % 0)))
+                             :street-2 (segment-util/get-or-nil % 1)
+                             :city (segment-util/get-or-nil % 2)
+                             :state (segment-util/get-or-nil % 3)
+                             :postal-code (segment-util/get-or-nil % 4)
+                             :country (segment-util/get-or-nil % 5)
+                             :address-type (lookups/address-by-value (segment-util/get-or-nil % 6))
+                             :other-geo-designation (segment-util/get-or-nil % 7)
+                             :county-code (segment-util/get-or-nil % 8)
+                             :census-tract (segment-util/get-or-nil % 9)
+                             :representation-code (segment-util/get-or-nil % 10)
+                             :validity-range (field->dr (segment-util/get-or-nil % 11)))))
 
 (defn xad-of-type
   "Returns a XAD record of the given type, populated with the provided map of
@@ -1083,11 +1090,11 @@
   [field]
   (field-to-type field
                  map->hfn
-                 #(array-map :surname (util/get-or-nil % 0)
-                             :own-surname-prefix (util/get-or-nil % 1)
-                             :own-surname (util/get-or-nil % 2)
-                             :spouse-surname-prefix (util/get-or-nil % 3)
-                             :spouse-surname (util/get-or-nil % 4))))
+                 #(array-map :surname (segment-util/get-or-nil % 0)
+                             :own-surname-prefix (segment-util/get-or-nil % 1)
+                             :own-surname (segment-util/get-or-nil % 2)
+                             :spouse-surname-prefix (segment-util/get-or-nil % 3)
+                             :spouse-surname (segment-util/get-or-nil % 4))))
 
 (defn string->hfn
   "Accepts a string with a family name value and returns a HFN record."
@@ -1137,9 +1144,9 @@
                           (:organization-id-number %)
                           (:xcn-check-digit %)
                           (:check-digit-scheme %)
-                          (util/trim-nils (hd->field (:identifier-authority %)))
+                          (segment-util/trim-nils (hd->field (:identifier-authority %)))
                           (:identifier-type-code %)
-                          (util/trim-nils (hd->field (:assigning-facility-id %)))
+                          (segment-util/trim-nils (hd->field (:assigning-facility-id %)))
                           (:name-representation-code %)
                           (:organization-identifier %))))
 
@@ -1154,16 +1161,16 @@
   [field]
   (field-to-type field
                  map->xon
-                 #(array-map :organization-name (util/get-or-nil % 0)
-                             :organization-name-type-code (util/get-or-nil % 1)
-                             :organization-id-number (util/get-or-nil % 2)
-                             :xcn-check-digit (util/get-or-nil % 3)
-                             :check-digit-scheme (util/get-or-nil % 4)
-                             :identifier-authority (field->hd (util/get-or-nil % 5))
-                             :identifier-type-code (util/get-or-nil % 6)
-                             :assigining-facility-id (field->hd (util/get-or-nil % 7))
-                             :name-representation-code (util/get-or-nil % 8)
-                             :organization-identifier (util/get-or-nil % 9))))
+                 #(array-map :organization-name (segment-util/get-or-nil % 0)
+                             :organization-name-type-code (segment-util/get-or-nil % 1)
+                             :organization-id-number (segment-util/get-or-nil % 2)
+                             :xcn-check-digit (segment-util/get-or-nil % 3)
+                             :check-digit-scheme (segment-util/get-or-nil % 4)
+                             :identifier-authority (field->hd (segment-util/get-or-nil % 5))
+                             :identifier-type-code (segment-util/get-or-nil % 6)
+                             :assigining-facility-id (field->hd (segment-util/get-or-nil % 7))
+                             :name-representation-code (segment-util/get-or-nil % 8)
+                             :organization-identifier (segment-util/get-or-nil % 9))))
 
 
 ;; XTN: extended telecommunication number
@@ -1257,17 +1264,17 @@
   [field]
   (field-to-type field
                  map->xtn
-                 #(array-map :telephone-number (util/get-or-nil % 0)
+                 #(array-map :telephone-number (segment-util/get-or-nil % 0)
                              :use-code (lookups/xtn-use-by-value
-                                        (util/get-or-nil % 1))
+                                        (segment-util/get-or-nil % 1))
                              :equipment-type (lookups/xtn-equip-by-value
-                                              (util/get-or-nil % 2))
-                             :email-address (util/get-or-nil % 3)
-                             :country-code (util/get-or-nil % 4)
-                             :area-code (util/get-or-nil % 5)
-                             :phone-number (util/get-or-nil % 6)
-                             :extension (util/get-or-nil % 7)
-                             :text (util/get-or-nil % 8))))
+                                              (segment-util/get-or-nil % 2))
+                             :email-address (segment-util/get-or-nil % 3)
+                             :country-code (segment-util/get-or-nil % 4)
+                             :area-code (segment-util/get-or-nil % 5)
+                             :phone-number (segment-util/get-or-nil % 6)
+                             :extension (segment-util/get-or-nil % 7)
+                             :text (segment-util/get-or-nil % 8))))
 
 (defn string->xtn-phone
   "Converts a phone number (as a string) into an XTN record. The 'use' and
@@ -1277,7 +1284,7 @@
    (string->xtn-phone nil nil phone))
   ([use-code equip-type phone]
    (when phone
-     (let [parsed (util/parse-phone phone)]
+     (let [parsed (segment-util/parse-phone phone)]
        (map->xtn
         {:telephone-number phone
          :use-code (or use-code xtn-use-primary)
@@ -1352,30 +1359,31 @@
   "Accepts one or a sequence of XCN records and returns a value, collection or map
   of HL7 v2 data."
   [xcn-record]
-  (type-to-field xcn-record
-                 #(conj (vector (:id-number %))
-                        (util/trim-nils (hfn->field (:qualified-family-name %)))
-                        (:given-name %)
-                        (:middle-name %)
-                        (:suffix %)
-                        (:prefix %)
-                        (:degree %)
-                        (:source-table %)
-                        (util/trim-nils (hd->field (:authority-designator %)))
-                        (:name-type %)
-                        (:xcn-check-digit %)
-                        (:check-scheme %)
-                        (:identifier-type-code %)
-                        (util/trim-nils (hd->field (:facility %)))
-                        (:name-representation-code %)
-                        (util/trim-nils (cwe->field (:name-representation-context %)))
-                        (util/trim-nils (dr->field (:name-validity-range %)))
-                        (:name-assembly-order %)
-                        (util/trim-nils (ts->field (:effective-date %)))
-                        (util/trim-nils (ts->field (:expiration-date %)))
-                        (:professional-suffix %)
-                        (util/trim-nils (cwe->field (:assigning-jurisdiction %)))
-                        (util/trim-nils (cwe->field (:assigning-agency %))))))
+  (type-to-field
+   xcn-record
+   #(conj (vector (:id-number %))
+          (segment-util/trim-nils (hfn->field (:qualified-family-name %)))
+          (:given-name %)
+          (:middle-name %)
+          (:suffix %)
+          (:prefix %)
+          (:degree %)
+          (:source-table %)
+          (segment-util/trim-nils (hd->field (:authority-designator %)))
+          (:name-type %)
+          (:xcn-check-digit %)
+          (:check-scheme %)
+          (:identifier-type-code %)
+          (segment-util/trim-nils (hd->field (:facility %)))
+          (:name-representation-code %)
+          (segment-util/trim-nils (cwe->field (:name-representation-context %)))
+          (segment-util/trim-nils (dr->field (:name-validity-range %)))
+          (:name-assembly-order %)
+          (segment-util/trim-nils (ts->field (:effective-date %)))
+          (segment-util/trim-nils (ts->field (:expiration-date %)))
+          (:professional-suffix %)
+          (segment-util/trim-nils (cwe->field (:assigning-jurisdiction %)))
+          (segment-util/trim-nils (cwe->field (:assigning-agency %))))))
 
 (s/fdef field->xcn
   :args (s/nilable (s/coll-of ::hl7-content))
@@ -1386,29 +1394,31 @@
   "Accepts an HL7 v2 field of XCN data and returns a single record, a sequence of
   XCN records or nil."
   [field]
-  (field-to-type field
-                 map->xcn
-                 #(array-map :id-number (util/get-or-nil % 0)
-                             :qualified-family-name (field->hfn (util/get-or-nil % 1))
-                             :given-name (util/get-or-nil % 2)
-                             :middle-name (util/get-or-nil % 3)
-                             :suffix (util/get-or-nil % 4)
-                             :prefix (util/get-or-nil % 5)
-                             :degree (util/get-or-nil % 6)
-                             :source-table (util/get-or-nil % 7)
-                             :authority-designator (field->hd (util/get-or-nil % 8))
-                             :name-type (util/get-or-nil % 9)
-                             :xcn-check-digit (util/get-or-nil % 10)
-                             :check-scheme (util/get-or-nil % 11)
-                             :identifier-type-code (util/get-or-nil % 12)
-                             :facility (field->hd (util/get-or-nil % 13))
-                             :name-representation-code (util/get-or-nil % 14)
-                             :name-representation-context (field->cwe (util/get-or-nil % 15))
-                             :name-validity-range (field->dr (util/get-or-nil % 16))
-                             :name-assembly-order (util/get-or-nil % 17)
-                             :effective-date (field->ts (util/get-or-nil % 18))
-                             :expiration-date (field->ts (util/get-or-nil % 19))
-                             :professional-suffix (util/get-or-nil % 20)
-                             :assigning-jurisdiction (field->cwe (util/get-or-nil % 21))
-                             :assigning-agency (field->cwe (util/get-or-nil % 22))
-                             )))
+  (field-to-type
+   field
+   map->xcn
+   #(array-map :id-number (segment-util/get-or-nil % 0)
+               :qualified-family-name (field->hfn (segment-util/get-or-nil % 1))
+               :given-name (segment-util/get-or-nil % 2)
+               :middle-name (segment-util/get-or-nil % 3)
+               :suffix (segment-util/get-or-nil % 4)
+               :prefix (segment-util/get-or-nil % 5)
+               :degree (segment-util/get-or-nil % 6)
+               :source-table (segment-util/get-or-nil % 7)
+               :authority-designator (field->hd (segment-util/get-or-nil % 8))
+               :name-type (segment-util/get-or-nil % 9)
+               :xcn-check-digit (segment-util/get-or-nil % 10)
+               :check-scheme (segment-util/get-or-nil % 11)
+               :identifier-type-code (segment-util/get-or-nil % 12)
+               :facility (field->hd (segment-util/get-or-nil % 13))
+               :name-representation-code (segment-util/get-or-nil % 14)
+               :name-representation-context (field->cwe (segment-util/get-or-nil % 15))
+               :name-validity-range (field->dr (segment-util/get-or-nil % 16))
+               :name-assembly-order (segment-util/get-or-nil % 17)
+               :effective-date (field->ts (segment-util/get-or-nil % 18))
+               :expiration-date (field->ts (segment-util/get-or-nil % 19))
+               :professional-suffix (segment-util/get-or-nil % 20)
+               :assigning-jurisdiction (field->cwe (segment-util/get-or-nil % 21))
+               :assigning-agency (field->cwe (segment-util/get-or-nil % 22))
+               )))
+
