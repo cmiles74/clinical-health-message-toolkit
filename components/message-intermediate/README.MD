@@ -1,12 +1,17 @@
-# Clinical Message and Segment Parser
+# Clinical Health Message Intermediate Format
 
-This project provides a library that will parse an HL7 v2 message (typically
-these are parsed with the [Clojure HL7 v2 message parser][hl7-parser]) into a
-message record containing the data objects representing the various segments and
-sets of segments in the message. Not every possible segment is currently
-represented, anything this library isn't prepared to parse is stored under the
-`remainder` key of the returned message record. As we need to read or write a
-segment we will develop the required code and add it to this project.
+This project provides a library that will parse an HL7 v2 message (parsed with
+the [Clojure HL7 v2 message parser][hl7-parser]) into our intermediate format: a
+record containing the data objects representing the various segments and sets of
+segments in the message. Not every possible segment is currently represented,
+anything this library isn't prepared to parse is stored in the output record
+and, if we convert that record into an HL7 message, that data _will be
+retained._
+
+We would like to support a larger set of segments and message components and are
+open to pull requests that will fill in missing pieces. We're also investigating
+ways people might define their own segments to map out proprietary data (like
+data stored in "Z" segments).
 
 The records returned by the message parser can be serialized directly to HL7.
 When you take an HL7 message, parse it into a record and then serialize that
@@ -16,6 +21,8 @@ they are empty and others may not, the same with repeating fields. Some systems
 may omit trailing components if they are empty, again some others may not. In
 all cases this library will include empty fields in segments and fields and will
 omit them from components.
+
+Lastly, should you find the need, converting a record to JSON is trivial. `;-)`
 
 ## Usage
 
@@ -29,46 +36,47 @@ To use this library, require it in your project.
 ```
 
 This will also pull in our HL7 v2 parser, we expose the `parse` method from that
-library under `parse`. While you aren't directly required to use the HL7 v2
-message parsing library, that's the "parsed" format upon which this library works. `;-)`
+library under `parse`.
 
 ### Parsing HL7 Messages
 
-Next we take an incoming HL7 v2 message that contains an acknowledgement message
-in a string, parse that with the HL7 v2 parser and then parse _that_ result into
-a set of segments representing the message.
-
-First we generate a test message...
+Next we take an incoming HL7 v2 message, parse that and then transform _that_
+result into a set of segments representing the message. First we generate a test message...
 
 ```clojure
 (require '[com.nervestaple.hl7-parser.test :as parser-test])
 (def test-message (parser-test/test-message))
 ```
-Now we can parse that into a message record that includes named attributes. It will be a bit easier to make out the data. `;-)`
+
+Now we can transform that into our intermediate format, this includes named
+attributes. It will be a bit easier to make out the data. `;-)`
 
 ```clojure
 (def test-record (message/hl7->record test-message))
 ```
 
 The message will be parsed into Clojure map that includes the delimiters and a
-list of segments. Any segments that we don't recognize will be placed under the
-`:remainder` key, any segment that has any trailing data we don't recognize will
-also have this data stored in its `:remainder` segment, in this way no data is
-lost. If we have a set of segments grouped together by a "set ID", they will be
-available as a sequence under the `:sets` key.
+list of segments; this is the "intermediate format". Any segments that we don't
+recognize will be placed under the `:remainder` key, any segment that has any
+trailing data we don't recognize will also have this data stored in its
+`:remainder` segment, in this way no data is lost. If we have a set of segments
+grouped together by a "set ID", they will be available as a sequence under the
+`:sets` key.
 
 ```clojure
 user> (keys msg)
 (:delimiters :segments :sets :remainder)
 ```
 
-Our test message, like many messages you'll find out in the wild, has a junk date set as the observation start date in its `OBR` segment. You may have noticed the warning message at parsing time...
+Our test message, like many messages you'll find out in the wild, has some
+issue. It has a junk date set as the observation start date in its `OBR`
+segment. You may have noticed the warning message at parsing time...
 
 ```
 2026-08-23T23:18:55.392Z maui WARN [com.nervestaple...utility:194] - Couldn't parse HL7 date/time "12349876": Conversion failed
 ```
 
-But no worries! We've stored this junk value in case you are expecting it our can make some sense out of it on your own.
+But no worries! We've stored this value as-is in case you are expecting it our can make some sense out of it on your own.
 
 ``` clojure
 (-> (message/get-segments test-record "OBR") (first) :observation-start)
@@ -191,9 +199,9 @@ So much easier to read than the raw HL7 message!
 All of the HL7 data types, segments and even messages have been specified as
 much as possible to ensure that we create syntactically valid messages. While
 this doesn't prevent gibberish messages it does give us some ability to catch
-messages that have data of the wrong type in certain fields, as you saw above we emit a warning if we can parse a date out of a field that is expected to contain a date.
+messages that have data of the wrong type in certain fields, as you saw above we emit a warning if we can't parse a date out of a field that is expected to contain a date.
 
-You may use the [spec](https://clojure.org/about/spec) to generate segments of
+You may use the [spec](https://clojure.org/about/spec) livrary to generate segments of
 test data...
 
 ```clojure
@@ -214,7 +222,7 @@ manner.
 (gen/generate (s/gen ::message/spec))
 ```
 
-Of course, with a test message in hand you can output a test HL7 message. `;-)`
+Of course, with a test message in hand you can output a test HL7 message.
 
 ```clojure
 (message/record->hl7 (gen/generate (s/gen ::message/spec)))
@@ -249,18 +257,12 @@ You can also create one with the current date and time.
 
 This is a [Clojure][clojure] project that uses [Leiningen][lein] for project
 management. Once you have those tools installed, please feel free to submit pull
-requests to this project. We're [publishing this package to our organization's
-GitHub package repository][gh-pkgs] on every push (a new SNAPSHOT) and at
-release.
-
-* [Using GitHub Packages with Leiningen][gh-pkgs]
+requests to this project.
 
 ### Branching
 
 At this time, all development should be done on individual feature branches and
-then merged into the `main` branch when the feature is complete. On each push to
-the main branch the project will build and publish a new [snapshot][snapshot] to
-it's GitHub package repository.
+then merged into the `main` branch when the feature is complete.
 
 ### Releasing
 
