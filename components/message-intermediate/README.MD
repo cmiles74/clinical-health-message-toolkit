@@ -38,7 +38,7 @@ To use this library, require it in your project.
 This will also pull in our HL7 v2 parser, we expose the `parse` method from that
 library under `parse`.
 
-### Parsing HL7 Messages
+### Reading Messages
 
 Next we take an incoming HL7 v2 message, parse that and then transform _that_
 result into a set of segments representing the message. First we generate a test message...
@@ -194,7 +194,7 @@ Segments:
 
 So much easier to read than the raw HL7 message!
 
-### Generating Messages
+### Writing Messages
 
 All of the HL7 data types, segments and even messages have been specified as
 much as possible to ensure that we create syntactically valid messages. While
@@ -243,15 +243,16 @@ time.
 
 
 ```clojure
-(segment/time->ts (time/zoned-date-time))
+(message/time->ts (time/zoned-date-time))
 ```
 
 You can also create one with the current date and time.
 
 ```clojure
-(segment/now->ts)
+(message/now->ts)
 ```
 
+This was originally a Leiningen project, we're working on converting it to a Polylith component so that we can manage the code in the same place as our other clinical health messaging tools. As we figure out nice ways to structure to message writing code we'll update this file.
 
 ## Development
 

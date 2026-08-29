@@ -5,6 +5,7 @@
    [com.nervestaple.clinical.message-intermediate.message.defaults :as defaults]
    [com.nervestaple.clinical.message-intermediate.message :as core]
    [com.nervestaple.clinical.message-intermediate.message.dump :as dump]
+   [com.nervestaple.clinical.message-intermediate.segment.main :as segment]
    [com.nervestaple.clinical.message-intermediate.segment.acc :as acc]
    [com.nervestaple.clinical.message-intermediate.segment.al1 :as al1]
    [com.nervestaple.clinical.message-intermediate.segment.dg1 :as dg1]
@@ -117,3 +118,26 @@
   "Prints a human readable version of the message record to standard out."
   [record]
   (dump/message record))
+
+(defn time->ts
+  "Accepts a zonded date time or a local data time and returns a TS record."
+  [date-time]
+  (segment/time->ts date-time))
+
+(defn now->ts
+  "Returns a TS record with the current date and time."
+  []
+  (segment/now->ts))
+
+(defn ts->field
+  "Accepts one or a sequence of TS records and returns a value, collection or map
+  of HL7 v2 data."
+  [ts-record]
+  (segment/ts->field ts-record))
+
+(defn field->ts
+  "Accepts an HL7 v2 field of TS data and returns a single TS record or a sequence
+  of records or nil."
+  [field]
+  (segment/field->ts field))
+
