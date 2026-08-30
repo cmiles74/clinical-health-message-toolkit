@@ -3,12 +3,10 @@
   (:require
    [clojure.edn :as edn]
    [clojure.string :as string]
-   [java-time :as time]
-   [taoensso.timbre :as logger
-    :refer (log  trace  debug  info  warn  error  fatal  report)]
-   [clojure.string :as str])
+   [com.nervestaple.clinical.log.interface :as log]
+   [java-time.api :as time])
   (:import
-   [java.time LocalDateTime ZonedDateTime ZoneOffset]
+   [java.time ZonedDateTime ZoneOffset]
    [java.time.format DateTimeFormatter]))
 
 (def default-delimiters
@@ -152,8 +150,8 @@
   local date, local date time or a zoned local date and time. If the value
   cannot be parsed, it is returned unaltered."
   [timestamp-in]
-  (when-not (str/blank? timestamp-in)
-    (let [timestamp (str/trim timestamp-in)]
+  (when-not (string/blank? timestamp-in)
+    (let [timestamp (string/trim timestamp-in)]
       (cond (map? timestamp)
             (parse-timestamp (unwrap-field timestamp))
 
@@ -191,7 +189,7 @@
                     :else
                     timestamp)
               (catch Exception exception
-                (logger/warn (str "Couldn't parse HL7 date/time \"" timestamp "\":")
+                (log/warn (str "Couldn't parse HL7 date/time \"" timestamp "\":")
                              (.getMessage exception))
                 timestamp))))))
 
