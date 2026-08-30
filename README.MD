@@ -18,6 +18,26 @@ You can also get in touch with the Polylith Team via our
 [forum](https://polylith.freeflarum.com) or on
 [Slack](https://clojurians.slack.com/archives/C013B7MQHJQ).
 
+## Building and Running
+
+All of the documentation for the various projects are in their respective
+directories in the "project" folder. The build script for all of these projects,
+however, lives in the root directory of this project (`./project.clj`).
+
+To build the "uberjar" for any project, invoke the script for the root directory like so:
+
+    clj -T:build uberjar :project message-intermediate
+
+The invocation above calls the "uberjar" function in the "build.clj" file for
+the project "message-intermediate", the output will be in the "target" directory
+of the project. Documentation about these projects can be found in their
+respective folders.
+
+Once the build is complete you can invoke the uberjar like so:
+
+     java -jar projects/minichat/target/message-intermediate.jar
+
+Even the projects that build library code typically have some demonstration utility that you can call directly from the JAR file.
 
 ----
 [wiki-hl7]: https://en.wikipedia.org/wiki/HL7

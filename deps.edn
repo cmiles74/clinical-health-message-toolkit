@@ -6,6 +6,9 @@
     poly/log {:local/root "components/log"}
     poly/message-intermediate {:local/root "components/message-intermediate"}
 
+    ;; bases
+    poly/message-intermediate-lib {:local/root "bases/message-intermediate-lib"}
+
     ;; clojure
     org.clojure/clojure {:mvn/version "1.12.5"}
     org.clojure/core.async {:mvn/version "1.9.865"}}}

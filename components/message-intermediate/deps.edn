@@ -1,6 +1,6 @@
 {:paths ["src" "resources"]
- :deps {org.clojars.cmiles74/clojure-hl7-parser {:mvn/version "3.5.1"}
-        clojure.java-time/clojure.java-time {:mvn/version "1.4.3"}
+ :deps {clojure.java-time/clojure.java-time {:mvn/version "1.4.3"}
+        org.clojars.cmiles74/clojure-hl7-parser {:mvn/version "3.5.1"}
         org.clojure/spec.alpha {:mvn/version "0.6.249"}
         org.clojure/test.check {:mvn/version "1.1.3"}}
  :aliases {:test {:extra-paths ["test"]

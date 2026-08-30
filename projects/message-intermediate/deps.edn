@@ -1,0 +1,10 @@
+{:deps
+ {poly/log {:local/root "../../components/log"}
+  poly/message-intermediate {:local/root "../../components/message-intermediate"}
+  poly/message-intermediate-lib {:local/root "../../bases/message-intermediate-lib"}}
+
+ :aliases
+ {:test {:extra-paths []
+         :extra-deps  {}}
+
+  :uberjar {:main com.nervestaple.clinical.message-intermediate-lib.api}}}
