@@ -1,0 +1,34 @@
+name: Build and Test
+
+on:
+  pull_request:
+  push:
+    branches:
+      - 'main'
+      - 'release'
+
+jobs:
+  build:
+    runs-on: [ubuntu-latest]
+    steps:
+      - name: Set Time Zone
+        uses: szenius/set-timezone@v1.0
+        with:
+          timezoneLinux: "US/Pacific"
+      - name: Checkout
+        uses: actions/checkout@v7
+      - name: Setup Java
+        uses: actions/setup-java@v6
+        with:
+          distribution: temurin
+          java-version: 25
+      - name: Install Clojure Tools
+        uses: DeLaGuardo/setup-clojure@13.4
+        with:
+          cli: 1.12.5.1664
+      - name: Force clojure to resolve dependencies
+        run: clojure -A:dev:test -P
+      - name: Test
+        run: xvfb-run clojure -M:poly test :all
+      - name: Check
+        run: clojure -M:poly check
