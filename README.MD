@@ -24,20 +24,23 @@ All of the documentation for the various projects are in their respective
 directories in the "project" folder. The build script for all of these projects,
 however, lives in the root directory of this project (`./project.clj`).
 
-To build the "uberjar" for any project, invoke the script for the root directory like so:
+Some projects build libraries, others build executable JAR files (uberjar) and some product both. To build a library project, invoke the script for the root directory like so:
 
-    clj -T:build uberjar :project message-intermediate
+    clj -T:build jar :project message-intermediate
 
-The invocation above calls the "uberjar" function in the "build.clj" file for
-the project "message-intermediate", the output will be in the "target" directory
-of the project. Documentation about these projects can be found in their
-respective folders.
+To build the "uberjar" for a project, invoke the script for the root directory like so:
 
-Once the build is complete you can invoke the uberjar like so:
+    clj -T:build uberjar :project interface-engine
 
-     java -jar projects/minichat/target/message-intermediate.jar
+Once the build is complete, you'll find the output in the project's `target` directory. If you've built an uberjar, you can invoke the uberjar like so:
 
-Even the projects that build library code typically have some demonstration utility that you can call directly from the JAR file.
+     java -jar projects/minichat/target/interface-engine.jar
+
+Projects may be also be cleaned, this will remove the `target` directory and it's contents from the target project.
+
+    clj -T:build clean :project message-intermediate
+
+Each of these invocations calls the appropriate" function in the `build.clj` file here at the root of this parent project. Documentation about these projects can be found in their respective folders.
 
 ----
 [wiki-hl7]: https://en.wikipedia.org/wiki/HL7
