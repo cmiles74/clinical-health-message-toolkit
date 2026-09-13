@@ -6,6 +6,9 @@ This project provides our clinical health message interchange format. Functions 
 
 [![cljdoc badge](https://cljdoc.org/badge/org.clojars.cmiles74/message-intermediate)](https://cljdoc.org/d/org.clojars.cmiles74/message-intermediate)
 
+You can jump directly to [the library documentation][cljdocs]
+- [Library documentation][cljdocs]
+
 ## Usage
 
 First add the dependency to your project. If you are using Clojure `tools.deps`, you'll add something like the line below to your `deps.clj.` file. Remember to check the badge above or the Clojars website for the newest stable version. :wink:
@@ -106,4 +109,4 @@ You will find the library in the target directory. :winking_face:
 
 ---
 [hl7v2]: https://en.wikipedia.org/wiki/HL7#Version_2
-[cljdocs]: https://cljdoc.org/d/org.clojars.cmiles74/message-intermediate
+[cljdocs]: https://cljdoc.org/d/org.clojars.cmiles74/message-intermediate/0.14/api/com.nervestaple.clinical.message-intermediate.interface.core
