@@ -1,4 +1,4 @@
-(ns com.nervestaple.clinical.message-intermediate.core
+(ns com.nervestaple.clinical.message-intermediate.demo
   (:gen-class)
   (:require
    [com.nervestaple.hl7-parser.parser :as parser]
