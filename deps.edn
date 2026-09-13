@@ -24,6 +24,14 @@
   :build {:deps
           {io.github.clojure/tools.build {:git/tag "v0.10.14" :git/sha "1176afd"}
            org.clojure/tools.deps {:mvn/version "0.19.1417"}
+           slipset/deps-deploy {:mvn/version "RELEASE"}
            org.babashka/http-client {:mvn/version "0.4.22"}}
           :paths ["build/resources"]
-          :ns-default build}}}
+          :ns-default build}
+
+  :deploy {:group "org.clojars.cmiles74"
+           :licenses [[:licenses
+                       [:license
+                        [:name "MIT License"]
+                        [:url "https://en.wikipedia.org/wiki/MIT_License"]
+                        [:distribution "repo"]]]]}}}

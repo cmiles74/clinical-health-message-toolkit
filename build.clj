@@ -11,10 +11,11 @@
 
    clojure -A:deps -T:build help/doc"
   (:require [clojure.java.io :as io]
-            [clojure.string :as str]
+            [clojure.string :as string]
             [clojure.tools.build.api :as b]
             [clojure.tools.deps :as t]
-            [clojure.tools.deps.util.dir :refer [with-dir]]))
+            [clojure.tools.deps.util.dir :refer [with-dir]]
+            [deps-deploy.deps-deploy :as d]))
 
 (defn- get-project-aliases []
   (let [edn-fn (juxt :root-edn :project-edn)]
@@ -84,17 +85,24 @@
    Example: clojure -T:build jar :project project-name"
   [{:keys [project jar-file] :as opts}]
   (let [project-root (ensure-project-root "jar" project)
+        root-aliases (with-dir (io/file ".") (get-project-aliases))
         aliases (with-dir (io/file project-root) (get-project-aliases))]
+    (println "Building library jar for" project-root)
     (b/with-project-root project-root
       (let [basis (lifted-basis)
             class-dir "target/classes"
-            lib (get-in aliases [:library :name])
+            lib (symbol (str (get-in root-aliases [:deploy :group]) "/"
+                             project))
+            licenses (get-in root-aliases [:deploy :licenses])
             current-version (get-in aliases [:library :version])
+            snapshot? (if (string/ends-with? current-version
+                                             "-SNAPSHOT")
+                        true false)
             jar-file (or jar-file
                          (-> aliases :jar :jar-file)
-                         (str "target/" project "-thin.jar"))
+                         (str "target/" project ".jar"))
             current-dir (System/getProperty "user.dir")
-            current-rel #(str/replace % (str current-dir "/") "")
+            current-rel #(string/replace % (str current-dir "/") "")
             directory? #(let [f (java.io.File. %)]
                           (and (.exists f) (.isDirectory f)))
             src+dirs (filter directory? (:classpath-roots basis))
@@ -103,25 +111,23 @@
                          :class-dir class-dir
                          :lib lib
                          :jar-file jar-file
-                         :scm {:tag (if (= "SNAPSHOT" current-version)
+                         :scm {:tag (if snapshot?
                                       "SNAPSHOT"
                                       (str "v" current-version))
                                :name "git"
                                :url "https://github.com/cmiles74/clinical-health-message-toolkit"}
                          :src-pom "partial_pom.xml"
-                         :version current-version})]
+                         :version current-version
+                         :pom-data licenses})]
         (b/delete {:path class-dir})
-        (println "\nWriting pom.xml..." (:lib opts))
-        (b/write-pom opts)
-        (println "Copying" (str (str/join ", " (map current-rel src+dirs)) "..."))
+        (println "\nWriting pom.xml..." lib current-version)
+        (b/write-pom (merge opts {:target (str project-root "/target")
+                                  :class-dir nil}))
+        (println "Copying" (str (string/join ", " (map current-rel src+dirs)) "..."))
         (b/copy-dir {:src-dirs src+dirs
                      :target-dir class-dir})
         (println "Building jar" (str jar-file "..."))
         (b/jar opts)
-        ;; we want the pom.xml file in the project folder for deployment:
-        (b/copy-file {:src (b/pom-path {:lib lib :class-dir class-dir})
-                      :target "pom.xml"})
-        (b/delete {:path class-dir})
         (println "Jar is built.")
         (-> opts
             (assoc :pom-file (str project-root "/pom.xml"))
@@ -149,6 +155,7 @@
   (let [project-root (ensure-project-root "uberjar" project)
         aliases (with-dir (io/file project-root) (get-project-aliases))
         main (-> aliases :uberjar :main)]
+    (println "Building uberjar for" project-root)
     (when-not main
       (throw (ex-info (str "the " project " project's deps.edn file does not specify the :main namespace in its :uberjar alias")
                       {:aliases aliases})))
@@ -167,7 +174,6 @@
                          :exclude [#"(?i)^META-INF/license/.*"
                                    #"^license/.*"]})]
         (b/delete {:path class-dir})
-        ;; no src or resources to copy
         (println "\nCompiling" (str main "..."))
         (b/compile-clj opts)
         (println "Building uberjar" (str uber-file "..."))
@@ -175,3 +181,19 @@
         (b/delete {:path class-dir})
         (println "Uberjar is built.")
         opts))))
+
+(defn deploy
+  "Deploys the jar file for the specified project.
+
+   Options:
+   * :project - required, the name of the project to build,"
+  [{:keys [project] :as opts}]
+  (let [project-root (ensure-project-root "deploy" project)
+        target (str project-root "/target/" project ".jar")
+        pom-file (str project-root "/target/pom.xml")
+        deploy-opts {:installer :remote
+                     :sign-releases? true
+                     :artifact target
+                     :pom-file pom-file}]
+    (println "Deploying jar for" project-root)
+    (d/deploy deploy-opts)))
