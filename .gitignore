@@ -23,7 +23,10 @@
 
 /example/example/**
 artifacts
+*.pom.xml
+*.pom.asc
 projects/**/pom.xml
+projects/**/pom.asc
 
 # nrepl
 .nrepl-port
