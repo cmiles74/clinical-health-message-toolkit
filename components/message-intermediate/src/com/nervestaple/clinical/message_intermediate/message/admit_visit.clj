@@ -3,16 +3,16 @@
    [clojure.spec.alpha :as s]
    [com.nervestaple.hl7-parser.parser :as hl7-parser]
    [com.nervestaple.hl7-parser.message :as message]
-   [luminare.hl7.parser.message.defaults :as defaults]
-   [luminare.hl7.parser.segment.msh :as msh]
-   [luminare.hl7.parser.segment.evn :as evn]
-   [luminare.hl7.parser.segment.pid :as pid]
-   [luminare.hl7.parser.segment.pd1 :as pd1]
-   [luminare.hl7.parser.segment.rol :as rol]
-   [luminare.hl7.parser.segment.nk1 :as nk1]
-   [luminare.hl7.parser.segment.pv1 :as pv1]
-   [luminare.hl7.parser.segment.in1 :as in1]
-   [luminare.hl7.parser.segment.obx :as obx]))
+   [com.nervestaple.clinical.message-intermediate.message.defaults :as defaults]
+   [com.nervestaple.clinical.message-intermediate.segment.msh :as msh]
+   [com.nervestaple.clinical.message-intermediate.segment.evn :as evn]
+   [com.nervestaple.clinical.message-intermediate.segment.pid :as pid]
+   [com.nervestaple.clinical.message-intermediate.segment.pd1 :as pd1]
+   [com.nervestaple.clinical.message-intermediate.segment.rol :as rol]
+   [com.nervestaple.clinical.message-intermediate.segment.nk1 :as nk1]
+   [com.nervestaple.clinical.message-intermediate.segment.pv1 :as pv1]
+   [com.nervestaple.clinical.message-intermediate.segment.in1 :as in1]
+   [com.nervestaple.clinical.message-intermediate.segment.obx :as obx]))
 
 ;; insurance information
 (defrecord insurance

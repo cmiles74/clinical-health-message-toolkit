@@ -3,13 +3,13 @@
    [clojure.spec.alpha :as s]
    [com.nervestaple.hl7-parser.parser :as hl7-parser]
    [com.nervestaple.hl7-parser.message :as message]
-   [luminare.hl7.parser.message.defaults :as defaults]
-   [luminare.hl7.parser.segment.msh :as msh]
-   [luminare.hl7.parser.segment.nte :as nte]
-   [luminare.hl7.parser.segment.obr :as obr]
-   [luminare.hl7.parser.segment.pid :as pid]
-   [luminare.hl7.parser.segment.pv1 :as pv1]
-   [luminare.hl7.parser.segment.obx :as obx]))
+   [com.nervestaple.clinical.message-intermediate.message.defaults :as defaults]
+   [com.nervestaple.clinical.message-intermediate.segment.msh :as msh]
+   [com.nervestaple.clinical.message-intermediate.segment.nte :as nte]
+   [com.nervestaple.clinical.message-intermediate.segment.obr :as obr]
+   [com.nervestaple.clinical.message-intermediate.segment.pid :as pid]
+   [com.nervestaple.clinical.message-intermediate.segment.pv1 :as pv1]
+   [com.nervestaple.clinical.message-intermediate.segment.obx :as obx]))
 
 ;; patient information, visit, observation orders and results
 (defrecord result
