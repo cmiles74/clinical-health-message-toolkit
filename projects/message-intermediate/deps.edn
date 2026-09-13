@@ -7,5 +7,5 @@
  {:test {:extra-paths []
          :extra-deps  {}}
 
-  :library {:version "0.11-SNAPSHOT"}
+  :library {:version "0.11"}
   :uberjar {:main com.nervestaple.clinical.message-intermediate-lib.api}}}
