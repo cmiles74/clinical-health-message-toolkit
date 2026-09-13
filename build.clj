@@ -115,7 +115,9 @@
                                       "SNAPSHOT"
                                       (str "v" current-version))
                                :name "git"
-                               :url "https://github.com/cmiles74/clinical-health-message-toolkit"}
+                               :url "https://github.com/cmiles74/clinical-health-message-toolkit"
+                               :connection "scm:git:git://github.com/cmiles74/clinical-health-message-toolkit.git"
+                               :developerConnection "git@github.com:cmiles74/clinical-health-message-toolkit.git"}
                          :src-pom "partial_pom.xml"
                          :version current-version
                          :pom-data licenses})]
