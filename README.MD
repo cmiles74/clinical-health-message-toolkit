@@ -1,4 +1,4 @@
-# Nervestaple Clinical Health Message Toolkit
+# Clinical Health Message Toolkit
 
 This project contains all of the bits and pieces that make up the Nervestaple Clinical Health Message Toolkit. These tools are designed to make clinical health messages in the [HL7 2.x Messaging][wiki-hl7] format easier to work with.
 
