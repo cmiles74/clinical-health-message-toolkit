@@ -5,7 +5,11 @@
 
  :aliases
  {:test {:extra-paths []
-         :extra-deps  {}}
+         :extra-deps  {polylith-kaocha/kaocha-wrapper
+                       {:git/url "https://github.com/imrekoszo/polylith-kaocha"
+                        :git/tag "v0.8.6"
+                        :git/sha "7282409"
+                        :deps/root "projects/kaocha-wrapper"}}}
 
-  :library {:version "0.14"}
+  :library {:version "0.15-SNAPSHOT"}
   :uberjar {:main com.nervestaple.clinical.message-intermediate-lib.api}}}
