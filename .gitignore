@@ -58,3 +58,7 @@ projects/redbrick-project/resources/public
 
 # state files
 state
+
+# ClojureScript build/test artifacts
+**/.cljs_node_repl
+**/out
