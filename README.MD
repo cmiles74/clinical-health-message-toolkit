@@ -50,6 +50,18 @@ Projects may be also be cleaned, this will remove the `target` directory and it'
 
 Each of these invocations calls the appropriate" function in the `build.clj` file here at the root of this parent project. Documentation about these projects can be found in their respective folders.
 
+## Running the Tests
+
+We're using [Koacha][koacha] via [the pluggable test runner][poly-koacha], this requires running the tests like this...
+
+    clj -M:poly test
+
+If you would like verbose output...
+
+    clj -M:poly test :verbose
+
+The `poly test...` tool is hard-wired such that it doesn't pickup the pluggable test runners. 😉
+
 ## Deployment
 
 We also provide a build target that will deploy a particular project out to Clojars. You will need to have the environment variables `CLOJARS_USERNAME` and `CLOJARS_PASSSWORD` set in your shell's environment.
@@ -63,3 +75,5 @@ Typically we use a "snapshot" version number during development (i.e. `0.11-SNAP
 ----
 [wiki-hl7]: https://en.wikipedia.org/wiki/HL7
 [hl7v2]: https://en.wikipedia.org/wiki/HL7#Version_2
+[koacha]: https://github.com/lambdaisland/kaocha
+[poly-koacha]: https://github.com/imrekoszo/polylith-kaocha
