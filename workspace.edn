@@ -1,5 +1,6 @@
 {:top-namespace "com.nervestaple.clinical"
  :interface-ns "interface"
+ :dialects #{"clj" "cljs"}
  :default-profile-name "default"
  :compact-views #{}
  :vcs {:name "git"
@@ -7,5 +8,10 @@
  :tag-patterns {:stable "stable-*"
                 :release "v[0-9]*"}
  :test {:create-test-runner polylith-kaocha.test-runner/create}
- :projects {"development" {:alias "dev"}
-            "message-intermediate" {:alias "intermed"}}}
+ :projects {"development"
+            {:alias "dev"}
+
+            "message-intermediate"
+            {:alias "intermed"
+             :test
+             {:polylith-kaocha/config-resource "tests.edn"}}}}
