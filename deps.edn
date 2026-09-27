@@ -9,8 +9,9 @@
     ;; bases
     poly/message-intermediate-lib {:local/root "bases/message-intermediate-lib"}
 
-    ;; clojure
+    ;; clojure + clojurescript
     org.clojure/clojure {:mvn/version "1.12.5"}
+    org.clojure/clojurescript {:mvn/version "1.12.145"}
     org.clojure/core.async {:mvn/version "1.9.865"}
 
     io.github.clojure/tools.build {:git/tag "v0.10.14" :git/sha "1176afd"}

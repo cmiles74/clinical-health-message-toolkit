@@ -4,8 +4,9 @@
   poly/message-intermediate-lib {:local/root "../../bases/message-intermediate-lib"}}
 
  :aliases
- {:test {:extra-paths []
-         :extra-deps  {polylith-kaocha/kaocha-wrapper
+ {:test {:extra-paths ["test-resources"]
+         :extra-deps  {com.lambdaisland/kaocha-cljs {:mvn/version "1.9.181"}
+                       polylith-kaocha/kaocha-wrapper
                        {:git/url "https://github.com/imrekoszo/polylith-kaocha"
                         :git/tag "v0.8.6"
                         :git/sha "7282409"
