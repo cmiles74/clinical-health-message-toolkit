@@ -62,6 +62,12 @@ If you would like verbose output...
 
 The `poly test...` tool is hard-wired such that it doesn't pickup the pluggable test runners. 😉
 
+### ClojureScript Support
+
+Some components and projects can run under both JVM Clojure and ClojureScript. To run these tests you will need to have [`nodejs`][nodejs] installed and you will need to install the dependencies listed in the `package.json` file at the root of this project.
+
+    npm install
+
 ## Deployment
 
 We also provide a build target that will deploy a particular project out to Clojars. You will need to have the environment variables `CLOJARS_USERNAME` and `CLOJARS_PASSSWORD` set in your shell's environment.
@@ -76,4 +82,5 @@ Typically we use a "snapshot" version number during development (i.e. `0.11-SNAP
 [wiki-hl7]: https://en.wikipedia.org/wiki/HL7
 [hl7v2]: https://en.wikipedia.org/wiki/HL7#Version_2
 [koacha]: https://github.com/lambdaisland/kaocha
+[nodejs]: https://nodejs.org/en
 [poly-koacha]: https://github.com/imrekoszo/polylith-kaocha

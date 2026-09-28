@@ -259,9 +259,18 @@ This was originally a Leiningen project, we're working on converting it to a Pol
 
 ## Development
 
-This is a [Clojure][clojure] project that uses [Leiningen][lein] for project
-management. Once you have those tools installed, please feel free to submit pull
-requests to this project.
+This project is designed to work under both JVM Clojure and ClojureScript. The big impact here is that we use two different time and date libraries right now (in the future we may consolidate on just one).
+
+- [java-time][java-time] under the JCM
+- [tick][tick] under ClojureScript
+
+If you update any of the dependencies related to tick, then you will need to run the following command in the root of this Polylith project (not the directory for this component).
+
+    clj -M:dev -m cljs.main --install-deps
+
+This will update the `package.json` to match the dependencies your updated. You may then install those new dependencies.
+
+    npm install
 
 ### Branching
 
@@ -284,7 +293,7 @@ version number to `0.1.2-SNAPSHOT`.
 ----
 
 [hl7-parser]: https://github.com/cmiles74/clojure-hl7-messaging-2-parser
-[clojure]: https://clojure.org/
-[lein]: https://github.com/technomancy/leiningen
 [snapshot]: https://github.com/technomancy/leiningen/blob/master/doc/TUTORIAL.md#snapshot-versions
 [gh-pkgs]: https://luminaremed.atlassian.net/wiki/spaces/DEV/pages/2006646785/Using+GitHub+Packages+with+Leiningen
+[java-time]: https://github.com/dm3/clojure.java-time
+[tick]: https://github.com/juxt/tick
