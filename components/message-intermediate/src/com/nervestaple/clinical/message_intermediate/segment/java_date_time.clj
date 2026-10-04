@@ -98,7 +98,7 @@
   [time]
   (when time
     (cond (time/instant? time)
-          (time/format "yyyyMMddHHmmssZ" "UTC")
+          (time/format "yyyyMMddHHmmssZ" (time/zoned-date-time time "UTC"))
 
           (time/zoned-date-time? time)
           (time/format "yyyyMMddHHmmssZ" time)
@@ -110,7 +110,7 @@
           (time/format "yyyyMMdd" time)
 
           (time/year-month? time)
-          (time/format "yyyyMM")
+          (time/format "yyyyMM" time)
 
           (instance? java.sql.Timestamp time)
           (format-time (.toLocalDateTime time))
@@ -126,48 +126,52 @@
   local date, local date time or a zoned local date and time. If the value
   cannot be parsed, it is returned unaltered."
   [timestamp-in]
-  (when-not (string/blank? timestamp-in)
+  (cond
+    (map? timestamp-in)
+    (parse-timestamp (unwrap-field timestamp-in))
+
+    (vector? timestamp-in)
+    (mapv #(parse-timestamp %) timestamp-in)
+
+    (string/blank? timestamp-in)
+    nil
+
+    :else
     (let [timestamp (string/trim timestamp-in)]
-      (cond (map? timestamp)
-            (parse-timestamp (unwrap-field timestamp))
+      (try
+        (cond (and (<= 14 (count timestamp))
+                   (or (string/includes? timestamp "+")
+                       (string/includes? timestamp "-")))
+              (time/zoned-date-time "yyyyMMddHHmmssZ" timestamp)
 
-            (vector? timestamp)
-            (mapv #(parse-timestamp %) timestamp)
+              (<= 16 (count timestamp))
+              (time/plus (time/local-date-time "yyyyMMddHHmmss" (subs timestamp 0 14))
+                         (time/millis (* 10 (Integer/parseInt (subs timestamp 14 16)))))
 
-            :else
-            (try
-              (cond (and (<= 14 (count timestamp))
-                         (or (string/includes? timestamp "+")
-                             (string/includes? timestamp "-")))
-                    (time/zoned-date-time "yyyyMMddHHmmssZ" timestamp)
+              (<= 14 (count timestamp))
+              (time/local-date-time "yyyyMMddHHmmss" timestamp)
 
-                    (<= 16 (count timestamp))
-                    (time/local-date-time "yyyyMMddHHmmssSS" timestamp)
+              (<= 12 (count timestamp))
+              (time/local-date-time "yyyyMMddHHmm" timestamp)
 
-                    (<= 14 (count timestamp))
-                    (time/local-date-time "yyyyMMddHHmmss" timestamp)
+              (<= 8 (count timestamp))
+              (try
+                (time/local-date "yyyyMMdd" timestamp)
+                (catch Exception _
+                  (time/local-date "yyyy-MM-dd" timestamp)))
 
-                    (<= 12 (count timestamp))
-                    (time/local-date-time "yyyyMMddHHmm" timestamp)
+              (= 6 (count timestamp))
+              (time/year-month "yyyyMM" timestamp)
 
-                    (<= 8 (count timestamp))
-                    (try
-                      (time/local-date "yyyyMMdd" timestamp)
-                      (catch Exception _
-                        (time/local-date "yyyy-MM-dd" timestamp)))
+              (= 4 (count timestamp))
+              (time/year "yyyy" timestamp)
 
-                    (= 6 (count timestamp))
-                    (time/year-month "yyyyMM" timestamp)
-
-                    (= 4 (count timestamp))
-                    (time/year "yyyy" timestamp)
-
-                    :else
-                    timestamp)
-              (catch Exception exception
-                (log/warn (str "Couldn't parse HL7 date/time \"" timestamp "\":")
-                          (.getMessage exception))
-                timestamp))))))
+              :else
+              timestamp)
+        (catch Exception exception
+          (log/warn (str "Couldn't parse HL7 date/time \"" timestamp "\":")
+                    (.getMessage exception))
+          timestamp)))))
 
 (defn parse-date
   "Parses a hypen separated date."
