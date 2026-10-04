@@ -5,9 +5,9 @@
    [clojure.string :as string]
    [com.nervestaple.hl7-parser.parser :as parser]
    [com.nervestaple.clinical.message-intermediate.segment.lookups :as lookups]
-   [com.nervestaple.clinical.message-intermediate.segment.date-time :as date-time]
    [com.nervestaple.clinical.message-intermediate.segment.utility :as segment-util]
-   [java-time.api :as time]))
+   #?(:clj [com.nervestaple.clinical.message-intermediate.segment.java-date-time :as date-time])
+   #?(:cljs [com.nervestaple.clinical.message-intermediate.segment.cljs-date-time :as date-time])))
 
 (defn to-field-remainder
   "Accepts a function that converts a record into a field of parsed HL7 v2 data
@@ -121,7 +121,7 @@
   of HL7 v2 data."
   [ts-record]
   (type-to-field ts-record
-                 #(vector (segment-util/format-time (:time %))
+                 #(vector (date-time/format-time (:time %))
                           (:precision %))))
 
 (s/fdef field->ts
@@ -135,7 +135,7 @@
   [field]
   (field-to-type field
                  map->ts
-                 #(array-map :time (segment-util/parse-timestamp
+                 #(array-map :time (date-time/parse-timestamp
                                     (segment-util/get-or-nil % 0))
                              :precision (segment-util/get-or-nil % 1))))
 
@@ -147,7 +147,7 @@
 (defn now->ts
   "Returns a TS record with the current date and time."
   []
-  (map->ts {:time (time/zoned-date-time)}))
+  (map->ts {:time (date-time/zoned-date-time)}))
 
 ;; DR: Date/Time Range
 (defrecord dr

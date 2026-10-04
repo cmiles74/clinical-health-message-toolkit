@@ -8,7 +8,7 @@
 
 ;; record representing an HL7 v2 message
 (defrecord message
-    [delimiters segments sets remainder])
+           [delimiters segments sets remainder])
 
 (s/def ::delimiters
   (s/with-gen map?

@@ -2,7 +2,9 @@
   (:require
    [cljs.spec.alpha :as s]
    [cljs.spec.gen.alpha :as gen]
+   [clojure.string :as string]
    [clojure.test.check.generators :as gens]
+   [com.nervestaple.clinical.log.interface :as log]
    [tick.core :as t]
    [tick.timezone]
    ["@js-joda/locale_en-us" :as locale]))
@@ -93,3 +95,99 @@
                                     (t/formatter "yyyyMMddHHmmss" (.. locale -Locale -US))
                                     val))
                                  (s/gen ::local-date-time)))))
+
+(defn unwrap-field
+  "Accepts a field of parsed HL7 v2 data, which may be one item of data or a
+  sequence of data items, and unwraps either the single item or each item in the
+  sequence and returns the data either the single item or vector of items."
+  [field]
+  (if (and (vector? field) (map? (first field)))
+    (mapv #(:content %) field)
+    (if (map? field) (:content field) field)))
+
+(defn zoned-date-time
+  "Returns the current date and time in the Eastern time zone."
+  []
+  (t/in (t/at (t/new-date) (t/new-time))
+        "America/New_York"))
+
+(defn format-time
+  "Formats the provided date and time into an HL7 messaging date."
+  [time]
+  (when time
+    (cond (t/instant? time)
+          (t/format (t/formatter "yyyyMMddHHmmssZ" locale)
+                    (t/in time "UTC"))
+
+          (t/zoned-date-time? time)
+          (t/format (t/formatter "yyyyMMddHHmmssZ" locale) time)
+
+          (t/date-time? time)
+          (t/format (t/formatter "yyyyMMddHHmmss" locale) time)
+
+          (t/date? time)
+          (t/format (t/formatter "yyyyMMdd" locale) time)
+
+          (t/year-month? time)
+          (t/format (t/formatter "yyyyMM" locale) time)
+
+          :else
+          (str time))))
+
+(defn parse-timestamp
+  "Parses an HL7 v2 formatted field or string with a date or timestamp into a
+  local date, local date time or a zoned local date and time. If the value
+  cannot be parsed, it is returned unaltered."
+  [timestamp-in]
+  (when-not (string/blank? timestamp-in)
+    (let [timestamp (string/trim timestamp-in)]
+      (cond (map? timestamp)
+            (parse-timestamp (unwrap-field timestamp))
+
+            (vector? timestamp)
+            (mapv #(parse-timestamp %) timestamp)
+
+            :else
+            (try
+              (cond (and (<= 14 (count timestamp))
+                         (or (string/includes? timestamp "+")
+                             (string/includes? timestamp "-")))
+                    (t/parse-zoned-date-time timestamp
+                                             (t/formatter "yyyyMMddHHmmssZ" locale))
+
+                    (<= 16 (count timestamp))
+                    (t/parse-date-time timestamp
+                                       (t/formatter "yyyyMMddHHmmssSS" locale))
+
+                    (<= 14 (count timestamp))
+                    (t/parse-date-time timestamp
+                                       (t/formatter "yyyyMMddHHmmss" locale))
+
+                    (<= 12 (count timestamp))
+                    (t/parse-date-time timestamp
+                                       (t/formatter "yyyyMMddHHmm" locale))
+
+                    (<= 8 (count timestamp))
+                    (try
+                      (t/parse-date timestamp
+                                    (t/formatter "yyyyMMdd" locale))
+                      (catch js/Error _
+                        (t/parse-date timestamp
+                                      (t/formatter "yyyy-MM-dd" locale))))
+
+                    (<= 5 (count timestamp))
+                    (t/parse-year-month timestamp
+                                        (t/formatter "yyyyMM" locale))
+
+                    (= 4 (count timestamp))
+                    (t/parse-year timestamp
+                                  (t/formatter "yyyy" locale))
+
+                    :else
+                    timestamp)
+              (catch js/Error error
+                (log/warn (str "Couldn't parse HL7 date/time \"" timestamp "\":")
+                          error)
+                timestamp))))))
+
+

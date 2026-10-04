@@ -5,7 +5,9 @@
    [com.nervestaple.clinical.message-intermediate.message.utility :as message]
    [com.nervestaple.clinical.message-intermediate.segment.main :as segment]
    [com.nervestaple.clinical.message-intermediate.segment.utility :as util]
-   [com.nervestaple.clinical.message-intermediate.segment.lookups :as lookups]))
+   [com.nervestaple.clinical.message-intermediate.segment.lookups :as lookups]
+   #?(:clj [com.nervestaple.clinical.message-intermediate.segment.java-date-time :as date-time])
+   #?(:cljs [com.nervestaple.clinical.message-intermediate.segment.cljs-date-time :as date-time])))
 
 ;; Segment identifier
 (def SEGMENT-ID "PID")
@@ -237,14 +239,14 @@
       :citizenship (segment/field->ce (message/get-segment-field % 26))
       :veteran-military-status (segment/field->ce (message/get-segment-field % 27))
       :nationality (segment/field->ce (message/get-segment-field % 28))
-      :patient-death-date-time (util/parse-timestamp (util/unwrap-and-first
-                                                      (message/get-segment-field % 29)))
+      :patient-death-date-time (date-time/parse-timestamp (util/unwrap-and-first
+                                                           (message/get-segment-field % 29)))
       :patient-death-indicator (lookups/yes-no-by-value (util/unwrap-and-first
                                                          (message/get-segment-field % 30)))
       :identity-unknown-indicator (util/unwrap-and-first (message/get-segment-field % 31))
       :identity-reliability-code (util/unwrap-and-first (message/get-segment-field % 32))
-      :last-update-date-time (util/parse-timestamp (util/unwrap-and-first
-                                                    (message/get-segment-field % 33)))
+      :last-update-date-time (date-time/parse-timestamp (util/unwrap-and-first
+                                                         (message/get-segment-field % 33)))
       :last-update-facility (util/unwrap-and-first (message/get-segment-field % 34))
       :species-code (segment/field->ce (message/get-segment-field % 35))
       :breed-code (segment/field->ce (message/get-segment-field % 36))

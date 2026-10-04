@@ -3,11 +3,8 @@
    [clojure.spec.alpha :as s]
    [com.nervestaple.hl7-parser.parser :as parser]
    [com.nervestaple.clinical.message-intermediate.message.utility :as message]
-   [com.nervestaple.clinical.message-intermediate.segment.lookups :as lookups]
-   [com.nervestaple.clinical.message-intermediate.segment.common-fields :as common]
    [com.nervestaple.clinical.message-intermediate.segment.main :as segment]
-   [com.nervestaple.clinical.message-intermediate.segment.utility :as util]
-   [clojure.edn :as edn]))
+   [com.nervestaple.clinical.message-intermediate.segment.utility :as util]))
 
 ;; segment identifier
 (def SEGMENT-ID "ACC")
