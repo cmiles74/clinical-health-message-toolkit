@@ -1,7 +1,9 @@
 (ns com.nervestaple.clinical.message-intermediate-lib.api
   (:require
-   [clojure.spec.alpha :as s]
-   [clojure.spec.gen.alpha :as gen]
+   #?(:clj [clojure.spec.alpha :as s])
+   #?(:clj [clojure.spec.gen.alpha :as gen])
+   #?(:cljs [cljs.spec.alpha :as s])
+   #?(:cljs [cljs.spec.gen.alpha :as gen])
    [com.nervestaple.clinical.log.interface :as log]
    [com.nervestaple.clinical.message-intermediate.interface.core :as message])
   (:gen-class))
