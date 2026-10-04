@@ -2,4 +2,6 @@
  {:tests [{:id :unit
            :type :kaocha.type/clojure.test}
           {:id :unit-cljs
-           :type :kaocha.type/cljs}]}
+           :type :kaocha.type/cljs
+           :cljs/precompile? true
+           :cljs/compiler-options {:main com.nervestaple.clinical.message-intermediate.segment.date-time-test}}]}
