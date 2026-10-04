@@ -1,6 +1,7 @@
 (ns com.nervestaple.clinical.message-intermediate.interface.segment
   (:require
-   [clojure.spec.alpha :as s]
+   #?(:clj [clojure.spec.alpha :as s])
+   #?(:cljs [cljs.spec.alpha :as s])
    [com.nervestaple.clinical.message-intermediate.segment.main :as segment]
    [com.nervestaple.clinical.message-intermediate.segment.acc :as acc]
    [com.nervestaple.clinical.message-intermediate.segment.al1 :as al1]

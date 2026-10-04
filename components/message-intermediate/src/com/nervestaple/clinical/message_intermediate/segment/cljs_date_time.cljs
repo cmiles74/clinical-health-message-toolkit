@@ -9,6 +9,8 @@
    [tick.timezone]
    ["@js-joda/locale_en-us" :as locale]))
 
+(def us-locale (.. locale -Locale -US))
+
 ;;
 ;; Spec and Generators for Java date and time instances
 ;;
@@ -92,7 +94,7 @@
                     (s/with-gen (s/and string? #(re-matches #"\d{1,24}" %))
                       #(gen/fmap (fn [val]
                                    (t/format
-                                    (t/formatter "yyyyMMddHHmmss" (.. locale -Locale -US))
+                                    (t/formatter "yyyyMMddHHmmss" us-locale)
                                     val))
                                  (s/gen ::local-date-time)))))
 
@@ -120,20 +122,20 @@
   [time]
   (when time
     (cond (t/instant? time)
-          (t/format (t/formatter "yyyyMMddHHmmssZ" locale)
+          (t/format (t/formatter "yyyyMMddHHmmssZ" us-locale)
                     (t/in time "UTC"))
 
           (t/zoned-date-time? time)
-          (t/format (t/formatter "yyyyMMddHHmmssZ" locale) time)
+          (t/format (t/formatter "yyyyMMddHHmmssZ" us-locale) time)
 
           (t/date-time? time)
-          (t/format (t/formatter "yyyyMMddHHmmss" locale) time)
+          (t/format (t/formatter "yyyyMMddHHmmss" us-locale) time)
 
           (t/date? time)
-          (t/format (t/formatter "yyyyMMdd" locale) time)
+          (t/format (t/formatter "yyyyMMdd" us-locale) time)
 
           (t/year-month? time)
-          (t/format (t/formatter "yyyyMM" locale) time)
+          (t/format (t/formatter "yyyyMM" us-locale) time)
 
           :else
           (str time))))
@@ -157,35 +159,35 @@
                          (or (string/includes? timestamp "+")
                              (string/includes? timestamp "-")))
                     (t/parse-zoned-date-time timestamp
-                                             (t/formatter "yyyyMMddHHmmssZ" locale))
+                                             (t/formatter "yyyyMMddHHmmssZ" us-locale))
 
                     (<= 16 (count timestamp))
                     (t/parse-date-time timestamp
-                                       (t/formatter "yyyyMMddHHmmssSS" locale))
+                                       (t/formatter "yyyyMMddHHmmssSS" us-locale))
 
                     (<= 14 (count timestamp))
                     (t/parse-date-time timestamp
-                                       (t/formatter "yyyyMMddHHmmss" locale))
+                                       (t/formatter "yyyyMMddHHmmss" us-locale))
 
                     (<= 12 (count timestamp))
                     (t/parse-date-time timestamp
-                                       (t/formatter "yyyyMMddHHmm" locale))
+                                       (t/formatter "yyyyMMddHHmm" us-locale))
 
                     (<= 8 (count timestamp))
                     (try
                       (t/parse-date timestamp
-                                    (t/formatter "yyyyMMdd" locale))
+                                    (t/formatter "yyyyMMdd" us-locale))
                       (catch js/Error _
                         (t/parse-date timestamp
-                                      (t/formatter "yyyy-MM-dd" locale))))
+                                      (t/formatter "yyyy-MM-dd" us-locale))))
 
-                    (<= 5 (count timestamp))
+                    (= 6 (count timestamp))
                     (t/parse-year-month timestamp
-                                        (t/formatter "yyyyMM" locale))
+                                        (t/formatter "yyyyMM" us-locale))
 
                     (= 4 (count timestamp))
                     (t/parse-year timestamp
-                                  (t/formatter "yyyy" locale))
+                                  (t/formatter "yyyy" us-locale))
 
                     :else
                     timestamp)
@@ -197,4 +199,4 @@
 (defn parse-date
   "Parses a hypen separated date."
   [date]
-  (t/parse-date (t/formatter "yyyy-MM-dd" locale) date))
+  (t/parse-date date (t/formatter "yyyy-MM-dd" us-locale)))

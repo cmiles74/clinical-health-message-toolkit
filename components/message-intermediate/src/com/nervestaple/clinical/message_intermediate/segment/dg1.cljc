@@ -1,6 +1,7 @@
 (ns com.nervestaple.clinical.message-intermediate.segment.dg1
   (:require
-   [clojure.spec.alpha :as s]
+   #?(:clj [clojure.spec.alpha :as s])
+   #?(:cljs [cljs.spec.alpha :as s])
    [com.nervestaple.hl7-parser.parser :as parser]
    [com.nervestaple.clinical.message-intermediate.message.utility :as message]
    [com.nervestaple.clinical.message-intermediate.segment.common-fields :as common]

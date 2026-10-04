@@ -1,7 +1,6 @@
 (ns com.nervestaple.clinical.message-intermediate.message.dump
   (:require
-   [clojure.pprint :as pprint]
-   [com.nervestaple.hl7-parser.dump :as hl7-dump]))
+   [clojure.pprint :as pprint]))
 
 ;;
 ;; Functions for viewing message data

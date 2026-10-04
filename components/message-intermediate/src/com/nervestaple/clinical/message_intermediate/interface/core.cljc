@@ -1,6 +1,7 @@
 (ns com.nervestaple.clinical.message-intermediate.interface.core
   (:require
-   [clojure.spec.alpha :as s]
+   #?(:clj [clojure.spec.alpha :as s])
+   #?(:cljs [cljs.spec.alpha :as s])
    [com.nervestaple.hl7-parser.parser :as parser]
    [com.nervestaple.clinical.message-intermediate.message.defaults :as defaults]
    [com.nervestaple.clinical.message-intermediate.message.message :as core]

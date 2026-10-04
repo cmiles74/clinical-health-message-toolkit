@@ -26,8 +26,10 @@
    [com.nervestaple.clinical.message-intermediate.segment.rxe :as rxe]
    [com.nervestaple.clinical.message-intermediate.segment.rxr :as rxr]
    [com.nervestaple.clinical.message-intermediate.segment.sft :as sft]
-   [clojure.spec.alpha :as s]
-   [clojure.spec.gen.alpha :as gen]))
+   #?(:clj [clojure.spec.alpha :as s])
+   #?(:clj [clojure.spec.gen.alpha :as gen])
+   #?(:cljs [cljs.spec.alpha :as s])
+   #?(:cljs [cljs.spec.gen.alpha :as gen])))
 
 ;;
 ;; Functions for turning parsed segments into records and records into parsed
