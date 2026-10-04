@@ -1,10 +1,17 @@
 (ns com.nervestaple.clinical.message-intermediate.message.dump
   (:require
-   [clojure.pprint :as pprint]))
+   #?(:clj [clojure.pprint :as pprint])
+   #?(:cljs [cljs.pprint :as pprint])))
 
 ;;
 ;; Functions for viewing message data
 ;;
+
+(defn- class-name
+  "Returns the name of the 'type' for the provided object."
+  [instance]
+  #?(:clj (.getSimpleName (class instance))
+     :cljs (.-name (type instance))))
 
 (defn dump-seq
   "Returns a set of strings that represent a human-readable version of the
@@ -16,11 +23,11 @@
   ([dump-record-fn seq-in indent]
    (let [this-indent (apply str (doall (take indent (repeat "  "))))]
      (map #(if (map? %)
-             (str this-indent "<" (.getSimpleName (class %)) "> {\n"
+             (str this-indent "<" (class-name %) "> {\n"
                   (apply str (dump-record-fn  % (inc indent)))
                   this-indent "}\n")
              (if %
-               (str this-indent "<" (.getSimpleName (class %))  "> " % "\n")
+               (str this-indent "<" (class-name %) "> " % "\n")
                (str this-indent % "\n")))
           seq-in))))
 
@@ -33,7 +40,7 @@
   ([map-in indent]
    (let [this-indent (apply str (doall (take indent (repeat "  "))))]
      (map #(str this-indent
-                (first %) " <" (.getSimpleName (class (second %))) ">"
+                (first %) " <"  (class-name (second %)) ">"
                 (cond (map? (second %))
                       (str "\n" (apply str (dump-record (second %) (inc indent))))
 
