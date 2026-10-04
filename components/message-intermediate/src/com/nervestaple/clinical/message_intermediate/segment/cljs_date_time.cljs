@@ -96,6 +96,10 @@
                                     val))
                                  (s/gen ::local-date-time)))))
 
+;;
+;; Functions for handling dates and times
+;;
+
 (defn unwrap-field
   "Accepts a field of parsed HL7 v2 data, which may be one item of data or a
   sequence of data items, and unwraps either the single item or each item in the
@@ -190,4 +194,7 @@
                           error)
                 timestamp))))))
 
-
+(defn parse-date
+  "Parses a hypen separated date."
+  [date]
+  (t/parse-date (t/formatter "yyyy-MM-dd" locale) date))
