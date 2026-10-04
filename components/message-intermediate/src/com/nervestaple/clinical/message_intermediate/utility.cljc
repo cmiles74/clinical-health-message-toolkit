@@ -2,9 +2,9 @@
   (:require
    [java-time.api :as time]
    [com.nervestaple.hl7-parser.parser :as parser]
-   [com.nervestaple.clinical.message-intermediate.segment.main :as segment])
-  (:import
-   [java.time.format DateTimeFormatter]))
+   [com.nervestaple.clinical.message-intermediate.segment.main :as segment]
+   #?(:clj [com.nervestaple.clinical.message-intermediate.segment.java-date-time :as date-time])
+   #?(:cljs [com.nervestaple.clinical.message-intermediate.segment.cljs-date-time :as date-time])))
 
 (def default-message-version
   "Default HL7 Messaging specification version"
@@ -13,12 +13,12 @@
 (defn current-time
   "Returns the current time with a time zone"
   []
-  (time/zoned-date-time))
+  (date-time/zoned-date-time))
 
 (defn parse-date
   "Parses a date in the format YYYY-MM-DD into an HL7 date"
   [date]
-  (time/local-date "yyyy-MM-dd" date))
+  (date-time/parse-date date))
 
 (defn parse-phones
   "Parses a map of incoming phone data and a set of email addresses into a set of
@@ -31,10 +31,6 @@
     (into phones-out (map #(parser/create-field
                             (segment/string->xtn-phone
                              (keyword (first %)) :Phone (last %))) phones))))
-
-(def hl7-timestamp-format
-  "Formatter for HL7 messaging timestamps"
-  (DateTimeFormatter/ofPattern "yyyyMMddHHmmssZ"))
 
 (defn filter-segment-id
   "Filters incoming messages by including only those messages that have at least

@@ -168,3 +168,8 @@
                 (log/warn (str "Couldn't parse HL7 date/time \"" timestamp "\":")
                           (.getMessage exception))
                 timestamp))))))
+
+(defn parse-date
+  "Parses a hypen separated date."
+  [date]
+  (time/local-date "yyyy-MM-dd" date))
