@@ -1,7 +1,9 @@
 (ns com.nervestaple.clinical.message-intermediate.message.message
   (:require
-   [clojure.spec.alpha :as s]
-   [clojure.spec.gen.alpha :as gen]
+   #?(:clj [clojure.spec.alpha :as s])
+   #?(:clj [clojure.spec.gen.alpha :as gen])
+   #?(:cljs [cljs.spec.alpha :as s])
+   #?(:cljs [cljs.spec.gen.alpha :as gen])
    [com.nervestaple.hl7-parser.parser :as hl7-parser]
    [com.nervestaple.clinical.message-intermediate.segment.parser :as segment]
    [com.nervestaple.clinical.message-intermediate.segment.utility :as util]))

@@ -156,7 +156,7 @@
                       (catch Exception _
                         (time/local-date "yyyy-MM-dd" timestamp)))
 
-                    (>= 5 (count timestamp))
+                    (= 6 (count timestamp))
                     (time/year-month "yyyyMM" timestamp)
 
                     (= 4 (count timestamp))

@@ -1,6 +1,7 @@
 (ns com.nervestaple.clinical.message-intermediate.message.admit-visit
   (:require
-   [clojure.spec.alpha :as s]
+   #?(:clj [clojure.spec.alpha :as s])
+   #?(:cljs [cljs.spec.alpha :as s])
    [com.nervestaple.hl7-parser.parser :as hl7-parser]
    [com.nervestaple.hl7-parser.message :as message]
    [com.nervestaple.clinical.message-intermediate.message.defaults :as defaults]

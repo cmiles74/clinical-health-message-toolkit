@@ -5,7 +5,8 @@
    [com.nervestaple.clinical.message-intermediate.segment.msa :as msa]
    [com.nervestaple.clinical.message-intermediate.segment.msh :as msh]
    [com.nervestaple.clinical.message-intermediate.segment.err :as err]
-   [clojure.spec.alpha :as s]))
+   #?(:clj [clojure.spec.alpha :as s])
+   #?(:cljs [cljs.spec.alpha :as s])))
 
 (defrecord record
     [message-header message-acknowledgement error])
