@@ -145,56 +145,60 @@
   local date, local date time or a zoned local date and time. If the value
   cannot be parsed, it is returned unaltered."
   [timestamp-in]
-  (when-not (string/blank? timestamp-in)
+  (cond
+    (map? timestamp-in)
+    (parse-timestamp (unwrap-field timestamp-in))
+
+    (vector? timestamp-in)
+    (mapv #(parse-timestamp %) timestamp-in)
+
+    (string/blank? timestamp-in)
+    nil
+
+    :else
     (let [timestamp (string/trim timestamp-in)]
-      (cond (map? timestamp)
-            (parse-timestamp (unwrap-field timestamp))
+      (try
+        (cond (and (<= 14 (count timestamp))
+                   (or (string/includes? timestamp "+")
+                       (string/includes? timestamp "-")))
+              (t/parse-zoned-date-time timestamp
+                                       (t/formatter "yyyyMMddHHmmssZ" us-locale))
 
-            (vector? timestamp)
-            (mapv #(parse-timestamp %) timestamp)
-
-            :else
-            (try
-              (cond (and (<= 14 (count timestamp))
-                         (or (string/includes? timestamp "+")
-                             (string/includes? timestamp "-")))
-                    (t/parse-zoned-date-time timestamp
-                                             (t/formatter "yyyyMMddHHmmssZ" us-locale))
-
-                    (<= 16 (count timestamp))
-                    (t/parse-date-time timestamp
-                                       (t/formatter "yyyyMMddHHmmssSS" us-locale))
-
-                    (<= 14 (count timestamp))
-                    (t/parse-date-time timestamp
+              (<= 16 (count timestamp))
+              (t/>> (t/parse-date-time (subs timestamp 0 14)
                                        (t/formatter "yyyyMMddHHmmss" us-locale))
+                    (t/new-duration (* 10 (js/parseInt (subs timestamp 14 16))) :millis))
 
-                    (<= 12 (count timestamp))
-                    (t/parse-date-time timestamp
-                                       (t/formatter "yyyyMMddHHmm" us-locale))
+              (<= 14 (count timestamp))
+              (t/parse-date-time timestamp
+                                 (t/formatter "yyyyMMddHHmmss" us-locale))
 
-                    (<= 8 (count timestamp))
-                    (try
-                      (t/parse-date timestamp
-                                    (t/formatter "yyyyMMdd" us-locale))
-                      (catch js/Error _
-                        (t/parse-date timestamp
-                                      (t/formatter "yyyy-MM-dd" us-locale))))
+              (<= 12 (count timestamp))
+              (t/parse-date-time timestamp
+                                 (t/formatter "yyyyMMddHHmm" us-locale))
 
-                    (= 6 (count timestamp))
-                    (t/parse-year-month timestamp
-                                        (t/formatter "yyyyMM" us-locale))
+              (<= 8 (count timestamp))
+              (try
+                (t/parse-date timestamp
+                              (t/formatter "yyyyMMdd" us-locale))
+                (catch js/Error _
+                  (t/parse-date timestamp
+                                (t/formatter "yyyy-MM-dd" us-locale))))
 
-                    (= 4 (count timestamp))
-                    (t/parse-year timestamp
-                                  (t/formatter "yyyy" us-locale))
+              (= 6 (count timestamp))
+              (t/parse-year-month timestamp
+                                  (t/formatter "yyyyMM" us-locale))
 
-                    :else
-                    timestamp)
-              (catch js/Error error
-                (log/warn (str "Couldn't parse HL7 date/time \"" timestamp "\":")
-                          error)
-                timestamp))))))
+              (= 4 (count timestamp))
+              (t/parse-year timestamp
+                            (t/formatter "yyyy" us-locale))
+
+              :else
+              timestamp)
+        (catch js/Error error
+          (log/warn (str "Couldn't parse HL7 date/time \"" timestamp "\":")
+                    error)
+          timestamp)))))
 
 (defn parse-date
   "Parses a hypen separated date."
