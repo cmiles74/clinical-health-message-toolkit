@@ -23,14 +23,14 @@
           :opt-un [::sets]))
 
 (defn hl7->record
-  [message]
+  [message-in]
   (loop [index 0
-         segment-this (first (:segments message))
-         segments (rest (:segments message))
+         segment-this (first (:segments message-in))
+         segments (rest (:segments message-in))
          parsed-segments []
          remainder []]
     (if (not-empty segment-this)
-      (let [ps (segment/hl7->record segment-this (:delimiters message))
+      (let [ps (segment/hl7->record segment-this (:delimiters message-in))
             ps-indexed (when ps (assoc ps :index index))]
         (recur (inc index)                             ;; increment our index
                (first segments)                        ;; pull out our current segment
@@ -40,7 +40,7 @@
                ;; unparsed segments added to the remainder
                (if (not ps) (conj remainder (assoc segment-this :index index))
                    remainder)))
-      (message. (:delimiters message)
+      (message. (:delimiters message-in)
                 (remove nil? parsed-segments)
                 nil
                 remainder))))

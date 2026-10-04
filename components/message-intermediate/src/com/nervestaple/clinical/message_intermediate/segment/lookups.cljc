@@ -1,6 +1,6 @@
 (ns com.nervestaple.clinical.message-intermediate.segment.lookups
   (:require
-   [clojure.string :as str]))
+   [clojure.string :as string]))
 
 (defn value-for-key
   "Accepts a sequence of value maps (in the format {:keys [...] :code \"XXX\"})
@@ -11,7 +11,8 @@
   [value-seq default-key key-string]
   (cond
     key-string
-    (let [match-fn #(= (str/lower-case key-string) (str/lower-case %))
+    (let [match-fn #(= (string/lower-case key-string)
+                       (string/lower-case (str %)))
           match (first (filter #(some match-fn (:keys %)) value-seq))]
       (if match (:code match)
           (if key-string key-string
@@ -45,7 +46,7 @@
       (key-by-value value-seq nil default-value))
 
     :else
-    (let [match-fn #(= (str/lower-case value) (str/lower-case %))
+    (let [match-fn #(= (string/lower-case value) (string/lower-case (str %)))
           match (first (filter #(match-fn
                                  (if (vector? (:code %)) (first (:code %))
                                      (:code %)))
@@ -53,7 +54,7 @@
       (if match
         (first (:keys match))
         (if value value
-          (key-by-value value-seq nil default-value))))))
+            (key-by-value value-seq nil default-value))))))
 
 (def address-type-data
   "Sequence of address type keys (where the first key represents the \"official\"

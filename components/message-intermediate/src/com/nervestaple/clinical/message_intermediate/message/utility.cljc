@@ -66,8 +66,10 @@
   match the supplied `segment-id` then an exception is thrown."
   [segment-id segment]
   (when (not= segment-id (:id segment))
-    (throw (Exception. (str "Parsed segment data is not of type \"" segment-id
-                           "\", found " (:id segment))))))
+    #?(:clj (throw (Exception. (str "Parsed segment data is not of type \"" segment-id
+                                    "\", found " (:id segment))))
+       :cljs (throw (js/Error. (str "Parsed segment data is not of type \"" segment-id
+                                    "\", found " (:id segment)))))))
 
 (defn hl7-to-record
   "Converts a segment of parsed HL7 data into an HL7 record by applying the
