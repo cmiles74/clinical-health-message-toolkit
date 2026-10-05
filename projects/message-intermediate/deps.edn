@@ -12,5 +12,5 @@
                         :git/sha "7282409"
                         :deps/root "projects/kaocha-wrapper"}}}
 
-  :library {:version "0.15-SNAPSHOT"}
+  :library {:version "0.16-SNAPSHOT"}
   :uberjar {:main com.nervestaple.clinical.message-intermediate-lib.api}}}
