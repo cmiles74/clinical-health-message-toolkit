@@ -61,7 +61,7 @@ The message will be parsed into Clojure map that includes the delimiters and a
 list of segments; this is the "intermediate format". Any segments that we don't
 recognize will be placed under the `:remainder` key, any segment that has any
 trailing data we don't recognize will also have this data stored in its
-`:remainder` segment, in this way no data is lost. If we have a set of segments
+`:remainder`, in this way no data is lost. If we have a set of segments
 grouped together by a "set ID", they will be available as a sequence under the
 `:sets` key.
 
@@ -78,7 +78,7 @@ Delimiters are expressed as integers with Unicode code points for the particular
 ```
 
 Our test message, like many messages you'll find out in the wild, has some
-issue. It has a junk date set as the observation start date in its `OBR`
+issues. It has a junk date set as the observation start date in its `OBR`
 segment. You may have noticed the warning message at parsing time...
 
 ```
@@ -255,13 +255,13 @@ time. You can also create one with the current date and time.
 (segment/now->ts)
 ```
 
-This was originally a Leiningen project, we're working on converting it to a Polylith component so that we can manage the code in the same place as our other clinical health messaging tools. As we figure out nice ways to structure to message writing code we'll update this file.
+This was originally a Leiningen project, we're working on converting it to a Polylith component so that we can manage the code in the same place as our other clinical health messaging tools. As we figure out nice ways to structure the code to make message writing easier, we'll update this file.
 
 ## Development
 
-This project is designed to work under both JVM Clojure and ClojureScript. The big impact here is that we use two different time and date libraries right now (in the future we may consolidate on just one).
+This project is designed to work under both JVM Clojure and ClojureScript. The big difference that you will notice is that we use two different time and date libraries (in the future we may consolidate on just one).
 
-- [java-time][java-time] under the JCM
+- [java-time][java-time] under the JVM
 - [tick][tick] under ClojureScript
 
 If you update any of the dependencies related to tick, then you will need to run the following command in the root of this Polylith project (not the directory for this component).
