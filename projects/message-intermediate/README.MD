@@ -1,17 +1,17 @@
 # Clinical Health Message Intermediate Format
 
-This project provides our clinical health message interchange format. Functions are provided to transform [HL7v2 Messaging messages][hl7v2] messages into our intermediate format and then back again.
+This project provides our clinical health message interchange format. Functions are provided to transform [HL7v2 Messaging messages][hl7v2] into our intermediate format and then back again.
 
 [![Clojars Project](https://img.shields.io/clojars/v/org.clojars.cmiles74/message-intermediate.svg)](https://clojars.org/org.clojars.cmiles74/message-intermediate)
 
-[![cljdoc badge](https://cljdoc.org/badge/org.clojars.cmiles74/message-intermediate)](https://cljdoc.org/d/org.clojars.cmiles74/message-intermediate)
+[![cljdoc badge](https://cljdoc.org/d/org.clojars.cmiles74/message-intermediate/0.15/api/com.nervestaple.clinical.message-intermediate.interface.core)](https://cljdoc.org/badge/org.clojars.cmiles74/message-intermediate)
 
 You can jump directly to [the library documentation][cljdocs]
 - [Library documentation][cljdocs]
 
 ## Usage
 
-First add the dependency to your project. If you are using Clojure `tools.deps`, you'll add something like the line below to your `deps.clj.` file. Remember to check the badge above or the Clojars website for the newest stable version. :wink:
+First add the dependency to your project. If you are using Clojure `tools.deps`, you'll add something like the line below to your `deps.clj.` file. Remember to check the badge above or the Clojars website for the newest stable version.
 
     org.clojars.cmiles74/message-intermediate {:mvn/version "0.10"}
 
@@ -105,7 +105,7 @@ To build the library jar file for this project, navigate to the root directory o
     cd ../..
     clj -T:build jar :project message-intermediate
 
-You will find the library in the target directory. :winking_face:
+You will find the library in the target directory.
 
 ---
 [hl7v2]: https://en.wikipedia.org/wiki/HL7#Version_2
