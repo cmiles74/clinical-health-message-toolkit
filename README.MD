@@ -4,6 +4,10 @@ This project contains all of the bits and pieces that make up the Nervestaple Cl
 
 [![Clojars Project](https://img.shields.io/clojars/v/org.clojars.cmiles74/message-intermediate.svg)](https://clojars.org/org.clojars.cmiles74/message-intermediate)
 
+We are also working on some more interactive documentation, it's a work in projects.
+
+- [Clinical Health Message Toolkit][gh-pages]
+
 ## Projects
 
 The following projects make up this larger Polylith project.
@@ -99,3 +103,4 @@ Typically we use a "snapshot" version number during development (i.e. `0.11-SNAP
 [poly-koacha]: https://github.com/imrekoszo/polylith-kaocha
 [clojure-cli]: https://clojure.org/guides/install_clojure
 [nodejs]: https://nodejs.org/en
+[gh-pages]: https://cmiles74.github.io/clinical-health-message-toolkit/
