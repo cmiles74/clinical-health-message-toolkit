@@ -1,8 +1,8 @@
-(ns com.nervestaple.hl7-parser.batch
+(ns com.nervestaple.clinical.message-parser.batch
   (:require
    [clojure.java.io :as io]
    [clojure.string :as string]
-   [com.nervestaple.hl7-parser.parser :as parser])
+   [com.nervestaple.clinical.message-parser.parser :as parser])
   (:import
    (java.io BufferedReader StringReader)))
 

@@ -1,10 +1,10 @@
-(ns com.nervestaple.hl7-parser.parser-test
+(ns com.nervestaple.clinical.message-parser.parser-test
   (:require
    [clojure.string :as string]
    [clojure.test :refer [deftest is testing]]
-   [com.nervestaple.hl7-parser.parser :as sut]
-   [com.nervestaple.hl7-parser.sample-message :as sample]
-   [com.nervestaple.hl7-parser.parser :as parser]))
+   [com.nervestaple.clinical.message-parser.parser :as sut]
+   [com.nervestaple.clinical.message-parser.sample-message :as sample]
+   [com.nervestaple.clinical.message-parser.parser :as parser]))
 
 (def short-message-parsed
   {:delimiters

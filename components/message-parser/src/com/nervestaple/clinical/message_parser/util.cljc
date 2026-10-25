@@ -2,7 +2,7 @@
 ;; Utility functions related to HL7 messages that don't really belong
 ;; anywhere else.
 ;;
-(ns com.nervestaple.hl7-parser.util
+(ns com.nervestaple.clinical.message-parser.util
   #?(:clj
      (:import
       (java.util Date))

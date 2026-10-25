@@ -1,11 +1,12 @@
 ;;
 ;; Functions to make it easier to work with parsed HL7 messages.
 ;;
-(ns com.nervestaple.hl7-parser.message
+(ns com.nervestaple.clinical.message-parser.message
   (:require
-   [com.nervestaple.hl7-parser.parser :refer [create-message create-segment
-                                             create-field pr-delimiters pr-field
-                                             format-timestamp]]))
+   [com.nervestaple.clinical.message-parser.parser
+    :refer [create-message create-segment
+            create-field pr-delimiters pr-field
+            format-timestamp]]))
 
 (def REGEX-MESSAGE-ID
      #"MSH\|[^\|]*\|[^\|]*\|[^\|]*\|[^\|]*\|[^\|]*\|[^\|]*\|[^\|]*\|[^\|]*\|([^\|]*)\|")
