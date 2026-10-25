@@ -4,6 +4,7 @@
    :extra-deps
    {;; components
     poly/log {:local/root "components/log"}
+    poly/message-parser {:local/root "components/message-parser"}
     poly/message-intermediate {:local/root "components/message-intermediate"}
 
     ;; bases
