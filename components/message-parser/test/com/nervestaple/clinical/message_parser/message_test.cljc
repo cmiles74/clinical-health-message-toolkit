@@ -1,10 +1,10 @@
-(ns com.nervestaple.hl7-parser.message-test
+(ns com.nervestaple.clinical.message-parser.message-test
   (:require
    [clojure.string :as string]
    [clojure.test :refer [deftest is testing]]
-   [com.nervestaple.hl7-parser.message :as sut]
-   [com.nervestaple.hl7-parser.parser :as parser]
-   [com.nervestaple.hl7-parser.sample-message :as sample]))
+   [com.nervestaple.clinical.message-parser.message :as sut]
+   [com.nervestaple.clinical.message-parser.parser :as parser]
+   [com.nervestaple.clinical.message-parser.sample-message :as sample]))
 
 (deftest get-segment-field-test
   (testing "Gets the field of a segment"

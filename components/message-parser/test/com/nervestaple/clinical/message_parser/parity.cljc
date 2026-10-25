@@ -5,14 +5,14 @@
 ;;   lein run -m com.nervestaple.hl7-parser.parity target/parity/jvm.txt
 ;;   npx shadow-cljs@3.5.1 compile parity && node target/parity/parity.js target/parity/cljs.txt
 ;;
-(ns com.nervestaple.hl7-parser.parity
+(ns com.nervestaple.clinical.message-parser.parity
   (:require
    [clojure.pprint :refer [pprint]]
    [clojure.string :as string]
-   [com.nervestaple.hl7-parser.dump :as dump]
-   [com.nervestaple.hl7-parser.message :as message]
-   [com.nervestaple.hl7-parser.parser :as parser]
-   [com.nervestaple.hl7-parser.util :as util]
+   [com.nervestaple.clinical.message-parser.dump :as dump]
+   [com.nervestaple.clinical.message-parser.message :as message]
+   [com.nervestaple.clinical.message-parser.parser :as parser]
+   [com.nervestaple.clinical.message-parser.util :as util]
    #?(:cljs ["fs" :as fs])))
 
 (defn- segments

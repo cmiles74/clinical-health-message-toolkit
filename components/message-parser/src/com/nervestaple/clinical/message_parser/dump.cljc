@@ -2,7 +2,7 @@
 ;; Provides functions for displaying human-readable versions of HL7
 ;; messages.
 ;;
-(ns com.nervestaple.hl7-parser.dump)
+(ns com.nervestaple.clinical.message-parser.dump)
 
 (defn dump-collection
   "Returns an human-readable String representing a collection of

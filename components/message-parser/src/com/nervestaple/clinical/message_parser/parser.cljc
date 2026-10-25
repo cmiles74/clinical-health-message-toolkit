@@ -1,7 +1,7 @@
 ;;
 ;; Provides functions for parsing HL7 messages.
 ;;
-(ns com.nervestaple.hl7-parser.parser
+(ns com.nervestaple.clinical.message-parser.parser
   #?(:clj
      (:import
       (java.text SimpleDateFormat)

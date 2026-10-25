@@ -1,6 +1,6 @@
-(ns com.nervestaple.hl7-parser.sample-message
+(ns com.nervestaple.clinical.message-parser.sample-message
   (:require
-   [com.nervestaple.hl7-parser.parser :as parser])
+   [com.nervestaple.clinical.message-parser.parser :as parser])
   #?(:clj
      (:import
       (java.util Date))))
