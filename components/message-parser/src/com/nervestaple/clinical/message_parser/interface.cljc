@@ -4,8 +4,9 @@
    [com.nervestaple.clinical.message-parser.test :as test-message]
    [com.nervestaple.clinical.message-parser.message :as message]
    [com.nervestaple.clinical.message-parser.dump :as dump]
-   [com.nervestaple.clinical.message-parser.batch :as batch]
-   [com.nervestaple.clinical.message-parser.util :as util]))
+   [com.nervestaple.clinical.message-parser.util :as util]
+   #?(:clj
+      [com.nervestaple.clinical.message-parser.batch :as batch])))
 
 (def ASCII_VT parser/ASCII_VT)
 (def ASCII_FS parser/ASCII_FS)
@@ -55,7 +56,7 @@
 (defn pr-message
   "Prints the provided HL7 message to the current *out* stream."
   [message]
-  (parser/pr-message))
+  (parser/pr-message message))
 
 (defn convert-values
   "If provided a list of values, any in items are replaced with an empty string.
@@ -130,7 +131,7 @@
 (defn segment-ids
   "Returns a list of the segment ids present in the message."
   [message]
-  (message/segment-ids))
+  (message/segment-ids message))
 
 (defn get-segments
   "Returns all of the segments in the message that have the provided
@@ -267,22 +268,6 @@
   ([parsed-message show-nulls]
    (dump/dump parsed-message show-nulls)))
 
-(defn read-messages
-  "Reads through a source of multiple messages (String, File, etc.) or a sequence
-  of messages and returns a lazy sequence of parsed HL7 v2 messaging messages.
-  If a sequence is provided it will be read directly otherwise a reader will be
-  opened on the provided data."
-  ([data-in]
-   (batch/read-messages data-in))
-  ([message lines]
-   (batch/read-messages message lines)))
-
-(defn filter-messages-bysegment
-  "Returns a lazy sequence of messages that have a matching segment id in their
-  first segment."
-  [segment-id parsed-messages]
-  (batch/filter-segment segment-id parsed-messages))
-
 (defn test-message
   "Returns a test message with a unique message id."
   []
@@ -293,3 +278,19 @@
   [message]
   (util/sanitize-message message))
 
+#?(:clj
+   (defn read-messages
+     "Reads through a source of multiple messages (String, File, etc.) or a sequence
+  of messages and returns a lazy sequence of parsed HL7 v2 messaging messages.
+  If a sequence is provided it will be read directly otherwise a reader will be
+  opened on the provided data."
+     ([data-in]
+      (batch/read-messages data-in))
+     ([message lines]
+      (batch/read-messages message lines)))
+
+   (defn filter-messages-bysegment
+     "Returns a lazy sequence of messages that have a matching segment id in their
+  first segment."
+     [segment-id parsed-messages]
+     (batch/filter-segment segment-id parsed-messages)))
