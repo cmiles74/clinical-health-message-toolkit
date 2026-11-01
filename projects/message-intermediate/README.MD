@@ -4,7 +4,7 @@ This project provides our clinical health message interchange format. Functions 
 
 [![Clojars Project](https://img.shields.io/clojars/v/org.clojars.cmiles74/message-intermediate.svg)](https://clojars.org/org.clojars.cmiles74/message-intermediate)
 
-[![cljdoc badge](https://cljdoc.org/d/org.clojars.cmiles74/message-intermediate/0.15/api/com.nervestaple.clinical.message-intermediate.interface.core)](https://cljdoc.org/badge/org.clojars.cmiles74/message-intermediate)
+[![cljdoc badge](https://cljdoc.org/d/org.clojars.cmiles74/message-intermediate/1.1/api/com.nervestaple.clinical.message-intermediate.interface.core)](https://cljdoc.org/badge/org.clojars.cmiles74/message-intermediate)
 
 You can jump directly to [the library documentation][cljdocs]
 - [Library documentation][cljdocs]

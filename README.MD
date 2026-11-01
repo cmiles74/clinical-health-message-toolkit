@@ -2,6 +2,8 @@
 
 This project contains all of the bits and pieces that make up the Nervestaple Clinical Health Message Toolkit. These tools are designed to make clinical health messages in the [HL7 2.x Messaging][wiki-hl7] format easier to work with.
 
+[![Clojars Project](https://img.shields.io/clojars/v/org.clojars.cmiles74/message-parser.svg)](https://clojars.org/org.clojars.cmiles74/message-parser)
+
 [![Clojars Project](https://img.shields.io/clojars/v/org.clojars.cmiles74/message-intermediate.svg)](https://clojars.org/org.clojars.cmiles74/message-intermediate)
 
 We are also working on some more interactive documentation, it's a work in projects.

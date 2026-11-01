@@ -94,7 +94,7 @@
             lib (symbol (str (get-in root-aliases [:deploy :group]) "/"
                              project))
             licenses (get-in root-aliases [:deploy :licenses])
-            current-version (get-in aliases [:library :version])
+            current-version (get-in root-aliases [:library :version])
             snapshot? (if (string/ends-with? current-version
                                              "-SNAPSHOT")
                         true false)
