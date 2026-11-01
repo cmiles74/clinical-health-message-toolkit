@@ -116,6 +116,11 @@
   (testing "Emits the test message"
     (is (= (sample/message) (sut/str-message short-message-parsed)))))
 
+(deftest pr-message-test
+  (testing "Prints the message to *out*"
+    (is (= (sample/message)
+           (with-out-str (sut/pr-message short-message-parsed))))))
+
 (deftest empty-message-delimiters-test
   (testing "Empty messages contain default delimiters"
     (is (= (:delimiters short-message-parsed)
@@ -391,3 +396,13 @@
       (is (= "PID " (segment-id "PID |1")))
       (is (= "PID" (segment-id "PID|1")))
       (is (= "PID﻿" (segment-id "PID﻿|1"))))))
+
+(deftest test-message-test
+  (testing "Returns a message that parses successfully"
+    (is (not (:error (sut/parse (sut/test-message)))))))
+
+(deftest sanitize-message-test
+  (testing "Removes control characters from a message"
+    (is (= "AB" (sut/sanitize-message (str "A" (char 1) "B")))))
+  (testing "Returns nil when given nil"
+    (is (nil? (sut/sanitize-message nil)))))

@@ -5,6 +5,11 @@
    [com.nervestaple.clinical.message-parser.interface :as sut]
    [com.nervestaple.clinical.message-parser.sample-message :as sample]))
 
+(deftest segment-ids-test
+  (testing "Returns the segment ids present in the message"
+    (is (= ["MSH" "PID" "PV1" "ORC" "OBR"]
+           (sut/segment-ids (sut/parse (sample/message)))))))
+
 (deftest get-segment-field-test
   (testing "Gets the field of a segment"
     (is (= ["Durden" "Tyler" "" "" "Mr."]
