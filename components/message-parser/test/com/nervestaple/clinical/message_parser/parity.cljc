@@ -2,9 +2,6 @@
 ;; Parses a fixed set of messages and writes the results to a file, so that the
 ;; output of the JVM and ClojureScript builds can be compared.
 ;;
-;;   lein run -m com.nervestaple.hl7-parser.parity target/parity/jvm.txt
-;;   npx shadow-cljs@3.5.1 compile parity && node target/parity/parity.js target/parity/cljs.txt
-;;
 (ns com.nervestaple.clinical.message-parser.parity
   (:require
    [clojure.pprint :refer [pprint]]
