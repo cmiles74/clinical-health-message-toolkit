@@ -11,7 +11,7 @@ We are also working on some more interactive documentation, it's a work in proje
 ## Projects
 
 The following projects make up this larger Polylith project.
-
+- [Message Parser](projects/message-parser/README.MD) - Parses and serializes [HL7v2 Messaging messages][hl7v2]
 - [Intermediate Format](projects/message-intermediate/README.MD) - Transforms [HL7v2 Messaging messages][hl7v2] into our intermediate format and back again
 
 ## Development
