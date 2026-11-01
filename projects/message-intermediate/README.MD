@@ -22,7 +22,7 @@ user> (require '[com.nervestaple.clinical.message-intermediate.interface.core :a
 nil
 ```
 
-Now we can parse an HL7 v2 message into our snazzy intermediate format. First let's get a test message together...
+Now we can parse an HL7 Messaging v2 message into our snazzy intermediate format. First let's get a test message together...
 
 ```clojure
 user> (def message "MSH|^~\\&|AcmeHIS|StJohn|CATH|StJohn|20061019172719||ORM^O01|1789321394264|P|2.3\rPID|||20301||Durden^Tyler^^^Mr.||19700312|M|||88 Punchward Dr.^^Los Angeles^CA^11221^USA|||||||\rPV1||O|OP^^||||4652^Paulson^Robert|||OP|||||||||9|||||||||||||||||||||||||20061019172717|20061019172718\rORC|NW|20061019172719\rOBR|1|20061019172719||76770^Ultrasound: retroperitoneal^C4|||12349876\r")

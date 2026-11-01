@@ -11,6 +11,11 @@
  :projects {"development"
             {:alias "dev"}
 
+            "message-parser"
+            {:alias "parser"
+             :test
+             {:polylith-kaocha/config-resource "tests.edn"}}
+
             "message-intermediate"
             {:alias "intermed"
              :test
