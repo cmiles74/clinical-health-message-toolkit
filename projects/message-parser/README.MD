@@ -1,6 +1,6 @@
 # Clinical Health Message Parser
 
-This  project provides out clinical health message ([HL7 Messaging v2][hl7v2]) parser. Functions are provided to parser these messages into a Clojure structure, alter them as needed and to serialize them back to messages.
+This  project provides our clinical health message ([HL7 Messaging v2][hl7v2]) parser. Functions are provided to parser these messages into a Clojure structure, alter them as needed and to serialize them back to messages.
 
 [![Clojars Project](https://img.shields.io/clojars/v/org.clojars.cmiles74/message-parser.svg)](https://clojars.org/org.clojars.cmiles74/message-parser)
 
@@ -12,17 +12,17 @@ First add the dependency to your project. If you are using Clojure `tools.deps`,
 
     org.clojars.cmiles74/message-parser {:mvn/version "1.0"}
 
-You can now open a REPL for your project and import the `core` namespace, that's where most of the good stuff lives.
+You can now open a REPL for your project and import the `interface` namespace, that's where most of the good stuff lives.
 
 ```clojure
-user> (require '[com.nervestaple.clinical.message-parser.interface.core :as core])
+user> (require '[com.nervestaple.clinical.message-parser.interface :as parser])
 nil
 ```
 
 Now you can parse and dump an HL7 Messaging v2 message...
 
 ```
-user> (def parsed-message (message/parse message))
+user> (def parsed-message (parser/parse message))
 {:delimiters {:field 124, :component 94, :subcomponent 38,
               :repeating 126, :escape 92},
  :segments [{:id "MSH", :fields [{:content "^~\\&"}

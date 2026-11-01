@@ -3,13 +3,11 @@
    [clojure.pprint :as p]
    [clojure.spec.alpha :as s]
    [clojure.spec.gen.alpha :as gen]
-   [com.nervestaple.hl7-parser.parser :as parser]
-   [com.nervestaple.hl7-parser.message :as parser-message]
-   [com.nervestaple.hl7-parser.test :as parser-test]
+   [com.nervestaple.clinical.message-parser.interface :as parser]
    [com.nervestaple.clinical.message-intermediate.interface.core :as message]
    [com.nervestaple.clinical.message-intermediate.interface.segment :as segment]))
 
-(def test-message (parser-test/test-message))
+(def test-message (parser/test-message))
 
 (def test-record (message/hl7->record test-message))
 
@@ -25,13 +23,13 @@
 (defn gen-ack []
   (let [record (gen-message->hl7)
         parsed (message/hl7->parsed-message record)]
-    (parser-message/ack-message {:sending-app "TUTORIAL"
-                                 :sending-facility "TUTORIAL FACILITY"
-                                 :production-mode "T"
-                                 :version "2.7.1"
-                                 :text-message "Processed successfully!"}
-                                "AA"
-                                parsed)))
+    (parser/ack-message {:sending-app "TUTORIAL"
+                         :sending-facility "TUTORIAL FACILITY"
+                         :production-mode "T"
+                         :version "2.7.1"
+                         :text-message "Processed successfully!"}
+                        "AA"
+                        parsed)))
 
 ;;(message/hl7->parsed-message (gen-message->hl7))
 (defn gen-message []

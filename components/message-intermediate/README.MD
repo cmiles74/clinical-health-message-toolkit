@@ -38,8 +38,8 @@ Next we take an incoming HL7 v2 message, parse that and then transform _that_
 result into a set of segments representing the message. First we generate a test message...
 
 ```clojure
-(require '[com.nervestaple.hl7-parser.test :as parser-test])
-(def test-message (parser-test/test-message))
+(require '[com.nervestaple.clinical.message-parser.interface :as parser])
+(def test-message (parser/test-message))
 test-message
 ;"MSH|^~\\&|AcmeHIS|StJohn|CATH|StJohn|20061019172719||ORM^O01|1788025612436|P|2.3\rPID|||20301||Durden^Tyler^^^Mr.||19700312|M|||88 Punchward Dr.^^Los Angeles^CA^11221^USA|||||||\rPV1||O|OP^^||||4652^Paulson^Robert|||OP|||||||||9|||||||||||||||||||||||||20061019172717|20061019172718\rORC|NW|20061019172719\rOBR|1|20061019172719||76770^Ultrasound: retroperitoneal^C4|||12349876\r"
 ```
