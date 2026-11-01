@@ -4,7 +4,7 @@ This project provides our clinical health message interchange format. Functions 
 
 [![Clojars Project](https://img.shields.io/clojars/v/org.clojars.cmiles74/message-intermediate.svg)](https://clojars.org/org.clojars.cmiles74/message-intermediate)
 
-[![cljdoc badge](https://cljdoc.org/d/org.clojars.cmiles74/message-intermediate/1.1/api/com.nervestaple.clinical.message-intermediate.interface.core)](https://cljdoc.org/badge/org.clojars.cmiles74/message-intermediate)
+[![cljdoc badge](https://cljdoc.org/badge/org.clojars.cmiles74/message-intermediate)](https://cljdoc.org/d/org.clojars.cmiles74/message-intermediate)
 
 You can jump directly to [the library documentation][cljdocs]
 - [Library documentation][cljdocs]
@@ -96,7 +96,7 @@ user> (core/record->hl7 r)
 
 While the output here is not _exactly_ the same as the message we started with, it is the same semantically. When we transform a record into an HL7v2 message we retain all of the empty values, you can see this in the example above as the trailing empty fields in the segments.
 
-There's other handy stuff we can do, check out [the function documentation][cljdocs] for more details. Probably the niftiest thing is that now that we have the data in a Clojure `map`, we can use familiar tools to make changes to the record.
+There's other handy stuff we can do, check out the [component doumentation for more examples][component] and [the function documentation][cljdocs] for more details. Probably the niftiest thing is that now that we have the data in a Clojure `map`, we can use familiar tools to make changes to the record.
 
 ## Building
 
@@ -109,4 +109,5 @@ You will find the library in the target directory.
 
 ---
 [hl7v2]: https://en.wikipedia.org/wiki/HL7#Version_2
-[cljdocs]: https://cljdoc.org/d/org.clojars.cmiles74/message-intermediate/0.14/api/com.nervestaple.clinical.message-intermediate.interface.core
+[component]: ../../components/message-intermediate/README.MD
+[cljdocs]: https://cljdoc.org/d/org.clojars.cmiles74/message-intermediate/1.1/api/com.nervestaple.clinical.message-intermediate.interface.core

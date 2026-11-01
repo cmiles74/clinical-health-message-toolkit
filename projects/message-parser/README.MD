@@ -4,7 +4,7 @@ This  project provides our clinical health message ([HL7 Messaging v2][hl7v2]) p
 
 [![Clojars Project](https://img.shields.io/clojars/v/org.clojars.cmiles74/message-parser.svg)](https://clojars.org/org.clojars.cmiles74/message-parser)
 
-[![cljdoc badge](https://cljdoc.org/d/org.clojars.cmiles74/message-parser/1.1/api/com.nervestaple.clinical.message-parser.interface)](https://cljdoc.org/badge/org.clojars.cmiles74/message-parser)
+[![cljdoc badge](https://cljdoc.org/badge/org.clojars.cmiles74/message-parser)](https://cljdoc.org/d/org.clojars.cmiles74/message-parser)
 
 ## Usage
 
@@ -31,7 +31,7 @@ user> (def parsed-message (parser/parse message))
   ...
 ```
 
-There's other handy stuff we can do, check out [the function documentation][cljdocs] for more details.
+There's other handy stuff we can do, check out the [component documentation for more examples][component] and [the function documentation][cljdocs] for more details.
 
 ## Building
 
@@ -44,4 +44,5 @@ You will find the library in the target directory.
 
 ---
 [hl7v2]: https://en.wikipedia.org/wiki/HL7#Version_2
-[cljdocs]: https://cljdoc.org/d/org.clojars.cmiles74/message-parser/1.0/api/com.nervestaple.clinical.message-parser.interface
+[component]: ../../components/message-parser/README.MD
+[cljdocs]: https://cljdoc.org/d/org.clojars.cmiles74/message-parser/1.1/api/com.nervestaple.clinical.message-parser.interface
