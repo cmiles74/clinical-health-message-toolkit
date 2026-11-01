@@ -2,8 +2,7 @@
   (:require
    #?(:clj [clojure.spec.alpha :as s])
    #?(:cljs [cljs.spec.alpha :as s])
-   [com.nervestaple.hl7-parser.parser :as hl7-parser]
-   [com.nervestaple.hl7-parser.message :as message]
+   [com.nervestaple.clinical.message-parser.interface :as parser]
    [com.nervestaple.clinical.message-intermediate.message.defaults :as defaults]
    [com.nervestaple.clinical.message-intermediate.segment.msh :as msh]
    [com.nervestaple.clinical.message-intermediate.segment.nte :as nte]
@@ -56,7 +55,7 @@
               (rest items))
 
        ;; add our accumulated segments and return the message
-       (let [message (hl7-parser/create-message delimiters
+       (let [message (parser/create-message delimiters
                                             (msh/record->hl7 (:msh record)))]
          (assoc message :segments (into (:segments message) segments)))))))
 
@@ -71,7 +70,7 @@
            segments (rest segments)]
 
       (if segment-this
-        (let [set-id (first (message/get-segment-field segment-this 1))
+        (let [set-id (first (parser/get-segment-field segment-this 1))
               segment-id (:id segment-this)
               result (if (groups set-id) (groups set-id) {})]
           (recur (assoc groups
@@ -98,7 +97,7 @@
 
         (map->record
          {:msh (msh/hl7->record
-                (first (message/get-segments parsed-message "MSH"))
+                (first (parser/get-segments parsed-message "MSH"))
                 (:delimiters parsed-message))
           :result (mapv #(map->result (last %)) groups)})))))
 

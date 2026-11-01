@@ -2,7 +2,7 @@
   (:require
    #?(:clj [clojure.spec.alpha :as s])
    #?(:cljs [cljs.spec.alpha :as s])
-   [com.nervestaple.hl7-parser.parser :as parser]
+   [com.nervestaple.clinical.message-parser.interface :as parser]
    [com.nervestaple.clinical.message-intermediate.message.utility :as message]
    [com.nervestaple.clinical.message-intermediate.segment.main :as segment]
    [com.nervestaple.clinical.message-intermediate.segment.pv1 :as pv1]

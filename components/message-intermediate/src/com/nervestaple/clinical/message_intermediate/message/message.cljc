@@ -4,7 +4,7 @@
    #?(:clj [clojure.spec.gen.alpha :as gen])
    #?(:cljs [cljs.spec.alpha :as s])
    #?(:cljs [cljs.spec.gen.alpha :as gen])
-   [com.nervestaple.hl7-parser.parser :as hl7-parser]
+   [com.nervestaple.clinical.message-parser.interface :as parser]
    [com.nervestaple.clinical.message-intermediate.segment.parser :as segment]
    [com.nervestaple.clinical.message-intermediate.segment.utility :as util]))
 
@@ -54,7 +54,7 @@
         segments-sorted (remove nil? (sort-by :index segments))]  ;; remove nil & sort
 
     ;; add our segments to a new message
-    (apply (partial hl7-parser/create-message (:delimiters message))
+    (apply (partial parser/create-message (:delimiters message))
            (map #(if (record? %) (segment/record->hl7 %)
                      %)
                 segments-sorted))))

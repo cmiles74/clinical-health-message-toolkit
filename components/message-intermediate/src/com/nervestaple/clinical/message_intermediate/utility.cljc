@@ -1,6 +1,6 @@
 (ns com.nervestaple.clinical.message-intermediate.utility
   (:require
-   [com.nervestaple.hl7-parser.parser :as parser]
+   [com.nervestaple.clinical.message-parser.interface :as parser]
    [com.nervestaple.clinical.message-intermediate.segment.main :as segment]
    #?(:clj [com.nervestaple.clinical.message-intermediate.segment.java-date-time :as date-time])
    #?(:cljs [com.nervestaple.clinical.message-intermediate.segment.cljs-date-time :as date-time])))

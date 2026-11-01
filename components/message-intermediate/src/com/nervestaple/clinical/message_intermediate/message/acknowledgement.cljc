@@ -1,7 +1,6 @@
 (ns com.nervestaple.clinical.message-intermediate.message.acknowledgement
   (:require
-   [com.nervestaple.hl7-parser.parser :as parser]
-   [com.nervestaple.hl7-parser.message :as message]
+   [com.nervestaple.clinical.message-parser.interface :as parser]
    [com.nervestaple.clinical.message-intermediate.segment.msa :as msa]
    [com.nervestaple.clinical.message-intermediate.segment.msh :as msh]
    [com.nervestaple.clinical.message-intermediate.segment.err :as err]
@@ -20,14 +19,14 @@
   an MSH segment with a message type of \"ACK\")."
   [message]
   (= "ACK"
-     (first (:content (message/get-field-first message "MSH" 9)))))
+     (first (:content (parser/get-field-first message "MSH" 9)))))
 
 (defn control-id-consistent?
   "Returns true if the unique control identifier in MSH segment matches the
   control identifier in the MSA segment."
   [message]
-  (= (message/get-field-first-value message "MSH" 10)
-     (first (message/get-field-first message "MSA" 2))))
+  (= (parser/get-field-first-value message "MSH" 10)
+     (first (parser/get-field-first message "MSA" 2))))
 
 (defn record->hl7
   "Accepts a record of acknowledgement (ACK) message data and returns an ACK

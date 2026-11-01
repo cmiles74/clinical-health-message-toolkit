@@ -1,12 +1,6 @@
 # Clinical Health Message Intermediate Format
 
-This project provides a library that will parse an HL7 v2 message (parsed with
-the [Clojure HL7 v2 message parser][hl7-parser]) into our intermediate format: a
-record containing the data objects representing the various segments and sets of
-segments in the message. Not every possible segment is currently represented,
-anything this library isn't prepared to parse is stored in the output record
-and, if we convert that record into an HL7 message, that data _will be
-retained._
+This project provides a library that will parse an HL7 v2 message (parsed with the [clinical message parser][hl7-parser]) into our intermediate format: a record containing the data objects representing the various segments and sets of segments in the message. Not every possible segment is currently represented, anything this library isn't prepared to parse is stored in the output record and, if we convert that record into an HL7 message, that data _will be retained._
 
 We would like to support a larger set of segments and message components and are
 open to pull requests that will fill in missing pieces. We're also investigating
@@ -292,7 +286,7 @@ version number to `0.1.2-SNAPSHOT`.
 
 ----
 
-[hl7-parser]: https://github.com/cmiles74/clojure-hl7-messaging-2-parser
+[hl7-parser]: ../message-parser/README.MD
 [snapshot]: https://github.com/technomancy/leiningen/blob/master/doc/TUTORIAL.md#snapshot-versions
 [gh-pkgs]: https://luminaremed.atlassian.net/wiki/spaces/DEV/pages/2006646785/Using+GitHub+Packages+with+Leiningen
 [java-time]: https://github.com/dm3/clojure.java-time
