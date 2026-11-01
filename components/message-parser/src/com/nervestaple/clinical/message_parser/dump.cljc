@@ -108,10 +108,8 @@
   ([parsed-message]
    (dump parsed-message false))
   ([parsed-message show-nulls]
-
    (dump-delimiters (:delimiters parsed-message))
    (println)
-
    (doseq [segment (:segments parsed-message)]
      (dump-segment (:delimiters parsed-message) segment show-nulls)
      (println))))

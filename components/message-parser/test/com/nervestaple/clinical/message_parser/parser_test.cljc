@@ -2,7 +2,6 @@
   (:require
    [clojure.string :as string]
    [clojure.test :refer [deftest is testing]]
-   ;;[com.nervestaple.clinical.message-parser.parser :as sut]
    [com.nervestaple.clinical.message-parser.interface :as sut]
    [com.nervestaple.clinical.message-parser.sample-message :as sample]))
 

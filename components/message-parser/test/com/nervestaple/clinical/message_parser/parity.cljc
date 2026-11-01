@@ -9,9 +9,7 @@
   (:require
    [clojure.pprint :refer [pprint]]
    [clojure.string :as string]
-   [com.nervestaple.clinical.message-parser.dump :as dump]
-   [com.nervestaple.clinical.message-parser.message :as message]
-   [com.nervestaple.clinical.message-parser.parser :as parser]
+   [com.nervestaple.clinical.message-parser.interface :as parser]
    [com.nervestaple.clinical.message-parser.util :as util]
    #?(:cljs ["fs" :as fs])))
 
@@ -216,53 +214,53 @@
     (section "parse" parsed)
     (section "parse (seq of characters)" (= parsed (attempt #(parser/parse (seq text)))))
     (section "parse (sequence of strings)" (= parsed (attempt #(parser/parse (pieces text)))))
-    (section "message-id-unparsed" (message/message-id-unparsed text))
-    (section "sanitize-message" (util/sanitize-message text))
-    (section "sanitize-message code units" (code-units (util/sanitize-message text)))
-    (section "ack-message-fallback" (normalize-ack (message/ack-message-fallback ack-options "AR" text)))
+    (section "message-id-unparsed" (parser/message-id-unparsed text))
+    (section "sanitize-message" (parser/sanitize-message text))
+    (section "sanitize-message code units" (code-units (parser/sanitize-message text)))
+    (section "ack-message-fallback" (normalize-ack (parser/ack-message-fallback ack-options "AR" text)))
     (section "ack-message-fallback, message id"
-             (message/ack-message-fallback (assoc ack-options :message-id "ACK1") "AR" text))
+             (parser/ack-message-fallback (assoc ack-options :message-id "ACK1") "AR" text))
     (section "str-message ack-message-fallback, message id"
              (attempt #(parser/str-message
-                        (message/ack-message-fallback (assoc ack-options :message-id "ACK1") "AR" text))))
+                        (parser/ack-message-fallback (assoc ack-options :message-id "ACK1") "AR" text))))
     (when-not (:error parsed)
-      (let [ids (message/segment-ids parsed)]
+      (let [ids (parser/segment-ids parsed)]
         (section "str-message" (attempt #(parser/str-message parsed)))
         (section "str-message round trip" (= parsed (attempt #(parser/parse (parser/str-message parsed)))))
         (section "pr-message" (attempt #(with-out-str (parser/pr-message parsed))))
         (section "segment-ids" ids)
         (section "get-segment-field" (attempt #(mapv (fn [segment]
                                                         (mapv (fn [index]
-                                                                [(message/get-segment-field segment index)
-                                                                 (message/get-segment-field-raw segment index)])
+                                                                [(parser/get-segment-field segment index)
+                                                                 (parser/get-segment-field segment index true)])
                                                               (range 0 6)))
                                                       (:segments parsed))))
-        (section "get-field-first MSH 10" (attempt #(message/get-field-first parsed "MSH" 10)))
-        (section "get-field-first-value MSH 9" (attempt #(message/get-field-first-value parsed "MSH" 9)))
-        (section "get-field PID 5" (attempt #(message/get-field parsed "PID" 5)))
+        (section "get-field-first MSH 10" (attempt #(parser/get-field-first parsed "MSH" 10)))
+        (section "get-field-first-value MSH 9" (attempt #(parser/get-field-first-value parsed "MSH" 9)))
+        (section "get-field PID 5" (attempt #(parser/get-field parsed "PID" 5)))
         (section "extract-text-from-segments OBX 5"
-                 (attempt #(message/extract-text-from-segments parsed "OBX" 5)))
+                 (attempt #(parser/extract-text-from-segments parsed "OBX" 5)))
         (section "extract-text-from-segments OBX 5 newline"
-                 (attempt #(message/extract-text-from-segments parsed "OBX" 5 "\n")))
+                 (attempt #(parser/extract-text-from-segments parsed "OBX" 5 "\n")))
         ;; only when the component exists, the error from nth differs between platforms
-        (when (< 1 (count (flatten (message/get-field parsed "PID" 5))))
-          (section "get-field-component PID 5 1" (attempt #(message/get-field-component parsed "PID" 5 1))))
+        (when (< 1 (count (flatten (parser/get-field parsed "PID" 5))))
+          (section "get-field-component PID 5 1" (attempt #(parser/get-field-component parsed "PID" 5 1))))
         (when (and (some #{"PID"} ids)
-                   (every? #(< 4 (count (:fields %))) (message/get-segments parsed "PID")))
+                   (every? #(< 4 (count (:fields %))) (parser/get-segments parsed "PID")))
           (section "set-field PID 5" (attempt #(parser/str-message
-                                                 (message/set-field parsed "PID" 5 ["Singer" "Marla" "" "" "Ms."])))))
+                                                 (parser/set-field parsed "PID" 5 ["Singer" "Marla" "" "" "Ms."])))))
         (when (some #{"MSH"} ids)
-          (section "set-field MSH 10" (attempt #(parser/str-message (message/set-field parsed "MSH" 10 "NEWID"))))
-          (let [ack (attempt #(message/ack-message ack-options "AA" parsed))]
+          (section "set-field MSH 10" (attempt #(parser/str-message (parser/set-field parsed "MSH" 10 "NEWID"))))
+          (let [ack (attempt #(parser/ack-message ack-options "AA" parsed))]
             (section "ack-message" (if (:error ack) ack (normalize-ack ack)))
             (when (and ack (not (:error ack)))
               (section "str-message ack" (parser/str-message (normalize-ack ack)))))
           (section "ack-message, message id"
-                   (attempt #(message/ack-message (assoc ack-options :message-id "ACK2") "AE" parsed))))
+                   (attempt #(parser/ack-message (assoc ack-options :message-id "ACK2") "AE" parsed))))
         (println ";; dump")
-        (print (attempt #(with-out-str (dump/dump parsed))))
+        (print (attempt #(with-out-str (parser/dump parsed))))
         (println ";; dump, show nulls")
-        (print (attempt #(with-out-str (dump/dump parsed true)))))))
+        (print (attempt #(with-out-str (parser/dump parsed true)))))))
   (println))
 
 (def sanitize-inputs
@@ -278,7 +276,7 @@
     (report-message entry))
   (println ";;;; sanitize-message")
   (doseq [text sanitize-inputs]
-    (section (pr-str (code-units text)) (code-units (util/sanitize-message text))))
+    (section (pr-str (code-units text)) (code-units (parser/sanitize-message text))))
   (println)
   (println ";;;; builders")
   (section "create-empty-message" (parser/create-empty-message))
