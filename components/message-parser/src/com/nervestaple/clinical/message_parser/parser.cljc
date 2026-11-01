@@ -9,9 +9,6 @@
       (java.io PushbackReader StringReader))))
 
 (defn format-timestamp
-  "Returns an HL7 compatible timestamp (yyyyMMddHHmmss) in local time for the
-  provided date (a java.util.Date or a JavaScript Date), or for the current time
-  if no date is provided."
   ([]
    (format-timestamp #?(:clj (Date.) :cljs (js/Date.))))
   ([date]
@@ -55,8 +52,6 @@
 ;;
 
 (defn pr-delimiters
-  "Returns an HL7 compatible text representation of the provided
-  delimiters."
   [delimiters]
   (str (char (:component delimiters))
        (char (:repeating delimiters))
@@ -83,8 +78,6 @@
     (do-pr-content content)))
 
 (defn pr-field
-  "Returns an HL7 compatible String representation of the provided
-  field."
   [delimiters field]
   (let [content (:content field)]
     (cond
@@ -103,17 +96,13 @@
                         (map (partial pr-content delimiters) content))))))
 
 (defn pr-segment
-  "Returns an HL7 compatible String representation of the provided
-  segment."
   [delimiters segment]
-
   (str (:id segment) (char (:field delimiters))
        (apply str
               (interpose (char (:field delimiters))
                          (map (partial pr-field delimiters) (:fields segment))))))
 
 (defn str-message
-  "Returns the provided HL7 message as a string."
   [message]
   (str (apply str
               (interpose (char SEGMENT-DELIMITER)
@@ -122,7 +111,6 @@
        (char SEGMENT-DELIMITER)))
 
 (defn pr-message
-  "Prints the provided HL7 message to the current *out* stream."
   [message]
   (print (str-message message)))
 
@@ -131,9 +119,6 @@
 ;;
 
 (defn convert-values
-  "If provided a list of values, any in items are replaced with an empty string.
-  When provided a single value a list with that value will be returned or an
-  empty list of that value is nil."
   [values]
   (cond
     (sequential? values)
@@ -146,47 +131,35 @@
     [values]))
 
 (defn create-empty-message
-  "Returns a new, empty message map. if no map of delimiters is provided then the
-  default set will be used."
   ([]
    (create-empty-message DEFAULT-DELIMITERS))
   ([delimiters]
   {:delimiters delimiters :segments []}))
 
 (defn create-message
-  "Accepts a map of delimiters and segments. Returns a new parsed message using
-  the provided delimiters populated with the provided segments."
   [delimiters & segments]
   {:delimiters delimiters
    :segments (if (< 0 (count segments)) (vec segments) [])})
 
 (defn create-segment
-  "Returns a new, empty segment map with the provided id."
   [id & fields]
   {:id id :fields (if (< 0 (count fields)) (vec fields) [])})
 
 (defn create-field
-  "Returns a new field map populated with the provided data."
   ([]
    (create-field nil))
   ([data]
    {:content (convert-values data)}))
 
 (defn add-segment
-  "Adds the provided segment map to the provided message map and returns a new
-  message."
   [message segment]
   (assoc message :segments (conj (:segments message) segment)))
 
 (defn add-field
-  "Adds the provided field map to the provided segment map and returns a new
-  segment."
   [segment field]
   (assoc segment :fields (conj (:fields segment) field)))
 
 (defn add-fields
-  "Adds the provided field maps to the provided segment map and returns a new
-  segment."
   [segment fields]
   (assoc segment :fields (into (:fields segment) fields)))
 
@@ -209,9 +182,6 @@
        (set! pushed (bit-and value 0xFFFF)))))
 
 (defmulti get-reader
-  "Returns a pushback reader for the provided Object. We want to wrap
-  another Reader but we'll cast to a String and read that if
-  required. On ClojureScript the Object is always read as a String."
   #?(:clj class :cljs type))
 
 #?(:clj
@@ -740,7 +710,5 @@
       (recur (read-int reader) parsing segment-id message))))
 
 (defn parse
-  "Reads data from the provided source (a Reader, String, etc.) and parses that
-  data into a map that represents the content of the message."
   [message-source]
   (parse-message (get-reader message-source)))
