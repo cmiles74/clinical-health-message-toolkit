@@ -1,6 +1,7 @@
 {:deps
  {poly/log {:local/root "../../components/log"}
-  poly/message-intermediate {:local/root "../../components/message-parser"}}
+  poly/message-parser {:local/root "../../components/message-parser"}
+  poly/message-parser-lib {:local/root "../../bases/message-parser-lib"}}
 
  :aliases
  {:test {:extra-paths ["test-resources"]

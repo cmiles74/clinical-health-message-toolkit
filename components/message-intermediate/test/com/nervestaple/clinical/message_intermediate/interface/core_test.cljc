@@ -3,7 +3,7 @@
    #?(:clj  [clojure.test :refer [deftest testing is]]
       :cljs [cljs.test :refer-macros [deftest testing is]])
    [clojure.string :as string]
-   [com.nervestaple.hl7-parser.parser :as parser]
+   [com.nervestaple.clinical.message-parser.interface :as parser]
    [com.nervestaple.clinical.message-intermediate.interface.core :as core]))
 
 (def test-message

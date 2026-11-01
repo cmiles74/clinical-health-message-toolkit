@@ -1,7 +1,6 @@
 (ns com.nervestaple.clinical.message-intermediate.message.utility
   (:require
-   [com.nervestaple.hl7-parser.parser :as hl7-parser]
-   [com.nervestaple.hl7-parser.message :as hl7-message]
+   [com.nervestaple.clinical.message-parser.interface :as parser]
    [com.nervestaple.clinical.message-intermediate.segment.utility :as util]))
 
 (defn get-segment-field
@@ -21,7 +20,7 @@
    (get-segment-field segment index false))
   ([segment index raw?]
    (when (<= index (inc (count (:fields segment))))                   ;; HL7 fields start at index 1
-     (util/unwrap-field (hl7-message/get-segment-field segment index raw?)))))
+     (util/unwrap-field (parser/get-segment-field segment index raw?)))))
 
 (defn replace-first
   "Removes the first item in a collection and replaces it with the result of
@@ -50,7 +49,7 @@
   #(let [fields (to-hl7-fn %)
          remainder (:remainder %)]
      (if remainder
-       (into fields (mapv hl7-parser/create-field remainder))
+       (into fields (mapv parser/create-field remainder))
        fields)))
 
 (defn record-to-hl7
@@ -59,7 +58,7 @@
   `to-hl7-fn` to the supplied record of data and adding it to the segment."
   [segment-id to-hl7-fn record]
   (let [to-field-fn (segment-to-hl7-remainder to-hl7-fn)]
-    (apply (partial hl7-parser/create-segment segment-id) (to-field-fn record))))
+    (apply (partial parser/create-segment segment-id) (to-field-fn record))))
 
 (defn validate-segment
   "Accepts a segment identifier and a segment, if the segment's identifier doesn't

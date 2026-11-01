@@ -2,8 +2,7 @@
   (:require
    #?(:clj [clojure.spec.alpha :as s])
    #?(:cljs [cljs.spec.alpha :as s])
-   [com.nervestaple.hl7-parser.parser :as hl7-parser]
-   [com.nervestaple.hl7-parser.message :as message]
+   [com.nervestaple.clinical.message-parser.interface :as parser]
    [com.nervestaple.clinical.message-intermediate.message.defaults :as defaults]
    [com.nervestaple.clinical.message-intermediate.segment.msh :as msh]
    [com.nervestaple.clinical.message-intermediate.segment.evn :as evn]
@@ -66,7 +65,7 @@
   ([record]
    (record->hl7 defaults/hl7-message-delimiters record))
   ([delimiters record]
-   (apply (partial hl7-parser/create-message delimiters)
+   (apply (partial parser/create-message delimiters)
           (concat [(msh/record->hl7 (:msh record))
                    (evn/record->hl7 (:evn record))
                    (pid/record->hl7 (:pid record))
@@ -85,7 +84,7 @@
            segment-this (first ins-segments)
            segments (rest ins-segments)]
       (if segment-this
-        (let [set-id (first (message/get-segment-field segment-this 1))
+        (let [set-id (first (parser/get-segment-field segment-this 1))
               segment-id (:id segment-this)
               result (if (groups set-id) (groups set-id) {})]
           (recur (assoc groups
@@ -110,17 +109,17 @@
                              (:segments parsed-message))]
     (map->record
      {:msh (msh/hl7->record
-            (first (message/get-segments parsed-message msh/SEGMENT-ID)))
+            (first (parser/get-segments parsed-message msh/SEGMENT-ID)))
       :evn (evn/hl7->record
-            (first (message/get-segments parsed-message evn/SEGMENT-ID)))
+            (first (parser/get-segments parsed-message evn/SEGMENT-ID)))
       :pid (pid/hl7->record
-            (first (message/get-segments parsed-message pid/SEGMENT-ID)))
+            (first (parser/get-segments parsed-message pid/SEGMENT-ID)))
       :pd1 (pd1/hl7->record
-            (first (message/get-segments parsed-message pd1/SEGMENT-ID)))
+            (first (parser/get-segments parsed-message pd1/SEGMENT-ID)))
       :rol role-segments
       :nk1 nk1-segments
       :pv1 (pv1/hl7->record
-            (first (message/get-segments parsed-message pv1/SEGMENT-ID)))
+            (first (parser/get-segments parsed-message pv1/SEGMENT-ID)))
       :obx obx-segments
       :insurance insurance-recs})))
 

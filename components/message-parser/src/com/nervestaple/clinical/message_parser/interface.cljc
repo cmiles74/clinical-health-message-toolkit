@@ -287,8 +287,9 @@
      ([data-in]
       (batch/read-messages data-in))
      ([message lines]
-      (batch/read-messages message lines)))
+      (batch/read-messages message lines))))
 
+#?(:clj
    (defn filter-messages-bysegment
      "Returns a lazy sequence of messages that have a matching segment id in their
   first segment."

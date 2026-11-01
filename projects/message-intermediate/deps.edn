@@ -1,10 +1,17 @@
 {:deps
  {poly/log {:local/root "../../components/log"}
   poly/message-intermediate {:local/root "../../components/message-intermediate"}
+  poly/message-parser {:local/root "../../components/message-parser"}
   poly/message-intermediate-lib {:local/root "../../bases/message-intermediate-lib"}}
 
  :aliases
- {:test {:extra-paths []}
+ {:test {:extra-paths ["test-resources"]
+         :extra-deps  {com.lambdaisland/kaocha-cljs {:mvn/version "1.9.181"}
+                       polylith-kaocha/kaocha-wrapper
+                       {:git/url "https://github.com/imrekoszo/polylith-kaocha"
+                        :git/tag "v0.8.6"
+                        :git/sha "7282409"
+                        :deps/root "projects/kaocha-wrapper"}}}
 
   :library {:version "0.16-SNAPSHOT"}
   :uberjar {:main com.nervestaple.clinical.message-intermediate-lib.api}}}

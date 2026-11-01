@@ -8,6 +8,7 @@
     poly/message-intermediate {:local/root "components/message-intermediate"}
 
     ;; bases
+    poly/message-parser-lib {:local/root "bases/message-parser-lib"}
     poly/message-intermediate-lib {:local/root "bases/message-intermediate-lib"}
 
     ;; clojure + clojurescript
