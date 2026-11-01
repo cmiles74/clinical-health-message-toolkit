@@ -2,57 +2,56 @@
   (:require
    [clojure.string :as string]
    [clojure.test :refer [deftest is testing]]
-   [com.nervestaple.clinical.message-parser.message :as sut]
-   [com.nervestaple.clinical.message-parser.parser :as parser]
+   [com.nervestaple.clinical.message-parser.interface :as sut]
    [com.nervestaple.clinical.message-parser.sample-message :as sample]))
 
 (deftest get-segment-field-test
   (testing "Gets the field of a segment"
     (is (= ["Durden" "Tyler" "" "" "Mr."]
            (sut/get-segment-field
-            (first (sut/get-segments (parser/parse (sample/message)) "PID"))
+            (first (sut/get-segments (sut/parse (sample/message)) "PID"))
             5)))))
 
 (deftest get-segment-field-raw-test
   (testing "Gets the raw value for a segment's field"
     (is (= {:content ["Durden" "Tyler" "" "" "Mr."]}
-           (sut/get-segment-field-raw
-            (first (sut/get-segments (parser/parse (sample/message)) "PID"))
-            5)))))
+           (sut/get-segment-field
+            (first (sut/get-segments (sut/parse (sample/message)) "PID"))
+            5 true)))))
 
 (deftest get-field-test
   (testing "Gets the field of a segment"
     (is (= (list ["Durden" "Tyler" "" "" "Mr."])
-           (sut/get-field (parser/parse (sample/message)) "PID" 5)))))
+           (sut/get-field (sut/parse (sample/message)) "PID" 5)))))
 
 (deftest get-field-component-test
   (testing "Gets the component of a field at the provided index"
     (is (= "Tyler"
-           (sut/get-field-component (parser/parse (sample/message)) "PID" 5 1)))))
+           (sut/get-field-component (sut/parse (sample/message)) "PID" 5 1)))))
 
 (deftest set-field-test
   (testing "Sets the value of a field of a parsed message"
     (is (= "MSH|^~\\&|AcmeHIS|StJohn|CATH|StJohn|20061019172719||ORM^O01|1676735383748|P|2.3\rPID|||20301||Singer^Marla^^^Ms.||19700312|M|||88 Punchward Dr.^^Los Angeles^CA^11221^USA|||||||\rPV1||O|OP^^||||4652^Paulson^Robert|||OP|||||||||9|||||||||||||||||||||||||20061019172717|20061019172718\rORC|NW|20061019172719\rOBR|1|20061019172719||76770^Ultrasound: retroperitoneal^C4|||12349876\r"
-           (parser/str-message (sut/set-field (parser/parse (sample/message))
+           (sut/str-message (sut/set-field (sut/parse (sample/message))
                                               "PID" 5
                                               ["Singer" "Marla" "" "" "Ms."]))))))
 
 (deftest extract-text-test
   (testing "Extracts and concatenates test of the first instance of the field at the index"
     (is (= "DurdenTylerMr."
-           (sut/extract-text-from-segments (parser/parse (sample/message))
+           (sut/extract-text-from-segments (sut/parse (sample/message))
                                            "PID" 5)))))
 
 (deftest get-field-first-test
   (testing "Fetches the first instance of the field at the index"
     (is (= ["Durden" "Tyler" "" "" "Mr."]
-           (sut/get-field-first (parser/parse (sample/message))
+           (sut/get-field-first (sut/parse (sample/message))
                                       "PID" 5)))))
 
 (deftest get-field-first-value-test
   (testing "Fetches the value of the first instance of the field at the index"
     (is (= "Durden^Tyler^^^Mr."
-           (sut/get-field-first-value (parser/parse (sample/message))
+           (sut/get-field-first-value (sut/parse (sample/message))
                                       "PID" 5)))))
 
 (deftest ack-test
@@ -76,12 +75,12 @@
              {:id "MSA",
               :fields [{:content ["AA"]} {:content ["1676735383748"]} {:content [""]}]}]}
            (sut/ack-message {:message-id "20230218125600"}
-                            "AA" (parser/parse (sample/message)))))))
+                            "AA" (sut/parse (sample/message)))))))
 
 (deftest no-ack-test
   (testing "Does not generate an acknowledgement for a parsed message"
     (is (= nil
-           (sut/ack-message {} "AA" (parser/parse (sample/message-no-ack)))))))
+           (sut/ack-message {} "AA" (sut/parse (sample/message-no-ack)))))))
 
 (deftest ack-fallback-test
   (testing "Generates an acknowledgement for a parsed message"
@@ -108,7 +107,7 @@
 (deftest ack-fallback-message-id-test
   (testing "Includes the message id from the unparsed message in the acknowledgement"
     (is (= "MSH|^~\\&|||UNKNOWN|UNKNOWN|20230218125600||ACK|1676735383748||\rMSA|AR|1676735383748|\r"
-           (parser/str-message
+           (sut/str-message
             (sut/ack-message-fallback {:message-id "20230218125600"}
                                       "AR" (sample/message)))))))
 (deftest message-with-long-segment-id
@@ -122,4 +121,4 @@
                       {:content ["1907838"]} {:content []} {:content []}
                       {:content []} {:content []} {:content []} {:content []}
                       {:content []} {:content []} {:content []}]}
-            (first (sut/get-segments (parser/parse (sample/message-long-segment-id)) "ZQRY"))))))
+            (first (sut/get-segments (sut/parse (sample/message-long-segment-id)) "ZQRY"))))))
