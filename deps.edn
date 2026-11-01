@@ -18,7 +18,12 @@
     io.github.clojure/tools.build {:git/tag "v0.10.14" :git/sha "1176afd"}
     org.clojure/tools.deps {:mvn/version "0.19.1417"}}}
 
-  :test {:extra-paths []}
+  :test {:extra-paths []
+         :extra-deps {polylith-kaocha/kaocha-wrapper
+                      {:git/url "https://github.com/imrekoszo/polylith-kaocha"
+                       :git/tag "v0.8.6"
+                       :git/sha "7282409"
+                       :deps/root "projects/kaocha-wrapper"}}}
 
   :poly {:main-opts ["-m" "polylith.clj.core.poly-cli.core"]
          :extra-deps {polylith/clj-poly {:mvn/version "0.3.33"}
