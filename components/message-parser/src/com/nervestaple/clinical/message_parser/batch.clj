@@ -1,6 +1,5 @@
 (ns com.nervestaple.clinical.message-parser.batch
   (:require
-   [clojure.java.io :as io]
    [clojure.string :as string]
    [com.nervestaple.clinical.message-parser.parser :as parser])
   (:import
@@ -89,9 +88,6 @@
     (parser/parse message)))
 
 (defn read-messages
-  "Reads through a set of data and returns a lazy sequence of parsed HL7
-  messaging messages. If a sequence is provided it will be read directly
-  otherwise a reader will be opened on the provided data."
   ([data-in]
    (cond
      (coll? data-in)
@@ -115,8 +111,6 @@
                        (read-messages message-next rest-lines)))))))
 
 (defn filter-segment
-  "Returns a lazy sequence of messages that have a matching segment id in their
-  first segment."
   [segment-id parsed-messages]
   (filter #(= segment-id (:id (first (:segments %)))) parsed-messages))
 

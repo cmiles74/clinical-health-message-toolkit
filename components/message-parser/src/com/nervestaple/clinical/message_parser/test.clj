@@ -10,7 +10,6 @@
    (java.util Date)))
 
 (defn test-message
-  "Returns a test message with a unique message id."
   []
   (str "MSH|^~\\&|AcmeHIS|StJohn|CATH|StJohn|20061019172719||ORM^O01|"
        (. (new Date) getTime) "|P|2.3" (char ASCII_CR)

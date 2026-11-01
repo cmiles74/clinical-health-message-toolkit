@@ -1,7 +1,11 @@
 (ns com.nervestaple.clinical.message-parser.interface
   (:require
    [com.nervestaple.clinical.message-parser.parser :as parser]
-   [com.nervestaple.clinical.message-parser.message :as message]))
+   [com.nervestaple.clinical.message-parser.test :as test-message]
+   [com.nervestaple.clinical.message-parser.message :as message]
+   [com.nervestaple.clinical.message-parser.dump :as dump]
+   [com.nervestaple.clinical.message-parser.batch :as batch]
+   [com.nervestaple.clinical.message-parser.util :as util]))
 
 (def ASCII_VT parser/ASCII_VT)
 (def ASCII_FS parser/ASCII_FS)
@@ -253,3 +257,39 @@
       AA (accepted), AE (error), AR (rejected)"
   [options ack-status message]
   (message/ack-message-fallback options ack-status message))
+
+(defn dump
+  "Prints a human-readable version of the HL7 message to the current *out* stream.
+  If the show-nulls parameter is provided and is true, null fields will also be
+  displayed."
+  ([parsed-message]
+   (dump/dump parsed-message false))
+  ([parsed-message show-nulls]
+   (dump/dump parsed-message show-nulls)))
+
+(defn read-messages
+  "Reads through a source of multiple messages (String, File, etc.) or a sequence
+  of messages and returns a lazy sequence of parsed HL7 v2 messaging messages.
+  If a sequence is provided it will be read directly otherwise a reader will be
+  opened on the provided data."
+  ([data-in]
+   (batch/read-messages data-in))
+  ([message lines]
+   (batch/read-messages message lines)))
+
+(defn filter-messages-bysegment
+  "Returns a lazy sequence of messages that have a matching segment id in their
+  first segment."
+  [segment-id parsed-messages]
+  (batch/filter-segment segment-id parsed-messages))
+
+(defn test-message
+  "Returns a test message with a unique message id."
+  []
+  (test-message/test-message))
+
+(defn sanitize-message
+  "Removes all control characters from a message."
+  [message]
+  (util/sanitize-message message))
+
