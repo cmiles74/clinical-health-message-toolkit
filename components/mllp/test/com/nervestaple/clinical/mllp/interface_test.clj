@@ -47,3 +47,30 @@
       (swap! received conj message))
     (is (and (= 1 (count @received))
              (= "Blerg!" (first @received))))))
+
+(deftest read-message-with-empty-body
+  (testing "Read an empty MLLP message followed by a normal one")
+  (let [messages (str "\u000B" "\u001C" "\r" "\u000B" "second" "\u001C" "\r")
+        received (atom [])]
+    (mllp/read-stream (ByteArrayInputStream. (.getBytes messages))
+                      #(swap! received conj %))
+    (is (and (= 2 (count @received))
+             (= "" (first @received))
+             (= "second" (second @received))))))
+
+(deftest read-throws-on-eof-mid-message
+  (testing "Reading a stream that closes before the end block throws")
+  (let [messages (str "\u000B" "Hello")]
+    (is (thrown-with-msg?
+         Exception #"Expected end block but found end of stream"
+         (mllp/read-stream (ByteArrayInputStream. (.getBytes messages)))))))
+
+(deftest write-then-read-preserves-non-ascii-characters
+  (testing "Writing and reading back a message preserves Latin-1 characters")
+  (let [original "José Müller"
+        sent (ByteArrayOutputStream.)]
+    (mllp/write-stream sent original)
+    (let [received (atom nil)]
+      (mllp/read-stream (ByteArrayInputStream. (.toByteArray sent))
+                        #(reset! received %))
+      (is (= original @received)))))
