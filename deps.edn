@@ -6,6 +6,7 @@
     poly/log {:local/root "components/log"}
     poly/message-parser {:local/root "components/message-parser"}
     poly/message-intermediate {:local/root "components/message-intermediate"}
+    poly/mllp {:local/root "components/mllp"}
 
     ;; bases
     poly/message-parser-lib {:local/root "bases/message-parser-lib"}
