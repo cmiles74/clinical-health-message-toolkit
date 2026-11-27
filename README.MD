@@ -6,6 +6,8 @@ This project contains all of the bits and pieces that make up the our Clinical H
 
 [![Clojars Project](https://img.shields.io/clojars/v/org.clojars.cmiles74/message-intermediate.svg)](https://clojars.org/org.clojars.cmiles74/message-intermediate)
 
+[![Clojars Project](https://img.shields.io/clojars/v/org.clojars.cmiles74/mllp.svg)](https://clojars.org/org.clojars.cmiles74/mllp)
+
 We are also working on some more interactive documentation, it's a work in projects.
 
 - [Clinical Health Message Toolkit][gh-pages]
@@ -15,6 +17,7 @@ We are also working on some more interactive documentation, it's a work in proje
 The following projects make up this larger Polylith project.
 - [Message Parser](projects/message-parser/README.MD) - Parses and serializes [HL7v2 Messaging messages][hl7v2]
 - [Intermediate Format](projects/message-intermediate/README.MD) - Transforms [HL7v2 Messaging messages][hl7v2] into our intermediate format and back again
+- [MLLP Reader and Writer](projects/mllp/README.MD) - Read and write messages wrapped with the [Minimum Low Level Protocol (MLLP)][mllp]
 
 ## Development
 
@@ -100,6 +103,7 @@ Typically we use a "snapshot" version number during development (i.e. `0.11-SNAP
 ----
 [wiki-hl7]: https://en.wikipedia.org/wiki/HL7
 [hl7v2]: https://en.wikipedia.org/wiki/HL7#Version_2
+[mllp]: https://www.hl7.org/documentcenter/public/wg/inm/mllp_transport_specification.PDF
 [koacha]: https://github.com/lambdaisland/kaocha
 [nodejs]: https://nodejs.org/en
 [poly-koacha]: https://github.com/imrekoszo/polylith-kaocha
