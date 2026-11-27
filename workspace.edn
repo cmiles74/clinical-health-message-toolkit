@@ -19,4 +19,10 @@
             "message-intermediate"
             {:alias "intermed"
              :test
+             {:polylith-kaocha/config-resource "tests.edn"}}
+
+            "mllp"
+            {:alias "mllp"
+             :necessary ["mllp"]
+             :test
              {:polylith-kaocha/config-resource "tests.edn"}}}}
